@@ -1,7 +1,7 @@
 {
   "name": "@itzcull/json-utils",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "packageManager": "pnpm@10.10.0",
   "description": "TypeScript utilities for working with JSON data",
   "author": "Will Cullen <will@itzcull.com>",
@@ -31,7 +31,8 @@
     "dev": "unbuild --stub",
     "lint": "eslint",
     "prepublishOnly": "nr build",
-    "release": "bumpp && pnpm publish",
+    "bump": "bumpp",
+    "release": "pnpm bump && pnpm publish",
     "start": "tsx src/index.ts",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
