@@ -13,7 +13,7 @@ import type { JSONSchema, JSONSchemaDefinition, JSONType } from './types'
  *
  * @example
  * ```typescript
- * import { createJsonSchema } from '@itzcull/utils/json'
+ * import { createJsonSchema } from '@itzcull/json-utils/json'
  *
  * // Primitive values
  * createJsonSchema('hello') // { type: 'string' }
@@ -153,7 +153,7 @@ export function createJsonSchema(value: JSONType): JSONSchema {
  *
  * @example
  * ```typescript
- * import { deleteUndefinedKeys } from '@itzcull/utils/json'
+ * import { deleteUndefinedKeys } from '@itzcull/json-utils/json'
  *
  * // Object cleaning
  * const user = { name: 'John', age: undefined, email: 'john@example.com' }
@@ -263,7 +263,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
  *
  * @example
  * ```typescript
- * import { generatePointersFromJsonSchema } from '@itzcull/utils/json'
+ * import { generatePointersFromJsonSchema } from '@itzcull/json-utils/json'
  *
  * // Simple object schema
  * const userSchema = {

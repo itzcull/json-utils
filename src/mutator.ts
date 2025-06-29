@@ -18,7 +18,7 @@ import { isJsonArray, isJsonObject, isJsonPointer, isJsonValue } from './predica
  *
  * @example
  * ```typescript
- * import { setJsonValueAtPointer } from '@itzcull/utils/json'
+ * import { setJsonValueAtPointer } from '@itzcull/json-utils'
  *
  * // Basic object property setting
  * const user = { name: 'John' }
@@ -148,7 +148,7 @@ export function setJsonValueAtPointer(obj: JSONObject, pointer: string, value: J
  *
  * @example
  * ```typescript
- * import { removeJsonValueAtPointer } from '@itzcull/utils/json'
+ * import { removeJsonValueAtPointer } from '@itzcull/json-utils/json'
  *
  * // Remove object property
  * const user = { name: 'John', age: 30, email: 'john@example.com' }

@@ -36,11 +36,10 @@ catalogs:
     vite:
       specifier: ^6.2.1
       version: 6.3.5
-  inlined:
-    '@itzcull/utils':
-      specifier: ^0.0.14
-      version: 0.0.14
   testing:
+    vitest:
+      specifier: ^3.0.8
+      version: 3.2.3
     vitest-package-exports:
       specifier: ^0.1.1
       version: 0.1.1
@@ -66,9 +65,6 @@ importers:
       '@itzcull/eslint-config':
         specifier: catalog:cli
         version: 0.0.3(@typescript-eslint/utils@8.33.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3))(@vue/compiler-sfc@3.5.13)(eslint-import-resolver-node@0.3.9)(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)(vitest@3.2.3(@types/debug@4.1.12)(@types/node@22.15.31)(jiti@2.4.2)(tsx@4.19.4)(yaml@2.8.0))
-      '@itzcull/utils':
-        specifier: catalog:inlined
-        version: 0.0.14
       '@types/node':
         specifier: catalog:types
         version: 22.15.31
@@ -749,9 +745,6 @@ packages:
         optional: true
       svelte-eslint-parser:
         optional: true
-
-  '@itzcull/utils@0.0.14':
-    resolution: {integrity: sha512-HuG5oFnflv/jy1GKmxZsQJyikLXdy1DW3hA3tVLFyvolE6WeVEdBdZtPuHfZST9Zgt5tZGzeAKhy2g+e0J3SMg==}
 
   '@jridgewell/sourcemap-codec@1.5.0':
     resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
@@ -3530,8 +3523,6 @@ snapshots:
       - supports-color
       - typescript
       - vitest
-
-  '@itzcull/utils@0.0.14': {}
 
   '@jridgewell/sourcemap-codec@1.5.0': {}
 

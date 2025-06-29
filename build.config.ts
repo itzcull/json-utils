@@ -7,8 +7,6 @@ export default defineBuildConfig({
   declaration: 'node16',
   clean: true,
   rollup: {
-    inlineDependencies: [
-      '@itzcull/utils',
-    ],
+    inlineDependencies: [],
   },
 })

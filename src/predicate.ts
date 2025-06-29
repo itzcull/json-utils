@@ -12,7 +12,7 @@ import type { JSONArray, JSONObject, JSONType, JSONTypeName } from './types'
  *
  * @example
  * ```typescript
- * import { isJsonValue } from '@itzcull/utils/json'
+ * import { isJsonValue } from '@itzcull/json-utils/json'
  *
  * // Valid JSON values
  * isJsonValue(null) // true
@@ -106,7 +106,7 @@ export function isJsonValue(obj: any): obj is JSONType {
  *
  * @example
  * ```typescript
- * import { isJsonObject } from '@itzcull/utils/json'
+ * import { isJsonObject } from '@itzcull/json-utils/json'
  *
  * // Valid JSON objects
  * isJsonObject({}) // true
@@ -170,7 +170,7 @@ export function isJsonObject(obj: any): obj is JSONObject {
  *
  * @example
  * ```typescript
- * import { isJsonArray } from '@itzcull/utils/json'
+ * import { isJsonArray } from '@itzcull/json-utils/json'
  *
  * // Valid JSON arrays
  * isJsonArray([]) // true
@@ -239,7 +239,7 @@ export function isJsonArray(obj: any): obj is JSONArray {
  *
  * @example
  * ```typescript
- * import { isJsonPointer } from '@itzcull/utils/json'
+ * import { isJsonPointer } from '@itzcull/json-utils/json'
  *
  * // Valid JSON Pointers
  * isJsonPointer('') // true (root pointer)
@@ -312,7 +312,7 @@ export const VALID_JSON_TYPE_NAMES = new Set<string>([
  *
  * @example
  * ```typescript
- * import { isJsonValueType } from '@itzcull/utils/json'
+ * import { isJsonValueType } from '@itzcull/json-utils/json'
  *
  * // Valid JSON type names
  * isJsonValueType('string') // true

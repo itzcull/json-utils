@@ -41,7 +41,6 @@
   "devDependencies": {
     "@antfu/ni": "catalog:cli",
     "@itzcull/eslint-config": "catalog:cli",
-    "@itzcull/utils": "catalog:inlined",
     "@types/node": "catalog:types",
     "bumpp": "catalog:cli",
     "eslint": "catalog:cli",

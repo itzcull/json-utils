@@ -15,7 +15,7 @@ import { isJsonObject, isJsonPointer } from './predicate'
  *
  * @example
  * ```typescript
- * import { getJsonPointerSegments } from '@itzcull/utils/json'
+ * import { getJsonPointerSegments } from '@itzcull/json-utils/json'
  *
  * // Basic path parsing
  * getJsonPointerSegments('/user/name') // ['user', 'name']
@@ -71,7 +71,7 @@ export function getJsonPointerSegments(pointer: string): string[] {
  *
  * @example
  * ```typescript
- * import { toJsonPointer } from '@itzcull/utils/json'
+ * import { toJsonPointer } from '@itzcull/json-utils/json'
  *
  * // Schema to data pointer conversion
  * toJsonPointer('/properties/user/properties/name') // '/user/name'
@@ -144,7 +144,7 @@ export function toJsonPointer(jsonSchemaPointer: string): string {
  *
  * @example
  * ```typescript
- * import { toJsonSchemaPointer } from '@itzcull/utils/json'
+ * import { toJsonSchemaPointer } from '@itzcull/json-utils/json'
  *
  * // Data to schema pointer conversion
  * toJsonSchemaPointer('/user/name') // '/properties/user/properties/name'
@@ -218,7 +218,7 @@ export function toJsonSchemaPointer(pointer: string): string {
  *
  * @example
  * ```typescript
- * import { getJsonValueAtPointer } from '@itzcull/utils/json'
+ * import { getJsonValueAtPointer } from '@itzcull/json-utils/json'
  *
  * // Basic property access
  * const user = { name: 'John', age: 30 }
@@ -319,7 +319,7 @@ export function getJsonValueAtPointer(obj: JSONType, pointer: string): JSONType 
  *
  * @example
  * ```typescript
- * import { getAllJsonPointers } from '@itzcull/utils/json'
+ * import { getAllJsonPointers } from '@itzcull/json-utils/json'
  *
  * // Basic object
  * const user = {
