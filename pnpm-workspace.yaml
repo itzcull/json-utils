@@ -22,7 +22,7 @@ catalogs:
   types:
     '@types/node': ^22.13.10
   utils:
-    tinyexec: ^0.3.2
+    tinyexec: ^1.0.0
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks
