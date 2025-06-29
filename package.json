@@ -1,16 +1,20 @@
 {
-  "name": "pkg-placeholder",
+  "name": "@itzcull/json-utils",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "packageManager": "pnpm@10.10.0",
-  "description": "_description_",
+  "description": "TypeScript utilities for working with JSON data",
   "author": "Will Cullen <will@itzcull.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/itzcull/pkg-placeholder.git"
+    "url": "git+https://github.com/itzcull/json-utils.git"
   },
-  "bugs": "https://github.com/itzcull/pkg-placeholder/issues",
-  "keywords": [],
+  "bugs": "https://github.com/itzcull/json-utils/issues",
+  "keywords": [
+    "json",
+    "typescript",
+    "utils"
+  ],
   "sideEffects": false,
   "exports": {
     ".": "./dist/index.mjs",
