@@ -143,9 +143,9 @@ describe('real-world API integration tests', () => {
     } | undefined>()
 
     // Test JSON Pointer types for nested access
-    expectTypeOf<'/profile/firstName'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/profile/socialLinks/github'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/preferences/notifications/email'>().toMatchTypeOf<UserPointers>()
+    expectTypeOf<'/profile/firstName'>().toExtend<UserPointers>()
+    expectTypeOf<'/profile/socialLinks/github'>().toExtend<UserPointers>()
+    expectTypeOf<'/preferences/notifications/email'>().toExtend<UserPointers>()
 
     // Test runtime validation with type safety
     const validUser = {
@@ -283,14 +283,14 @@ describe('schema transformation workflows', () => {
     type UserV2 = InferFromSchema<typeof userV2Schema>
 
     // Test type inference
-    expectTypeOf<UserV1>().toMatchTypeOf<{
+    expectTypeOf<UserV1>().toExtend<{
       id: string
       fullName: string
       emailAddress: string
       isActive?: boolean
     }>()
 
-    expectTypeOf<UserV2>().toMatchTypeOf<{
+    expectTypeOf<UserV2>().toExtend<{
       id: string
       firstName: string
       lastName: string
@@ -346,7 +346,7 @@ describe('schema transformation workflows', () => {
     >
     type PublicUser = InferFromSchema<PublicUserSchema>
 
-    expectTypeOf<PublicUser>().toMatchTypeOf<{
+    expectTypeOf<PublicUser>().toExtend<{
       id: string
       username: string
       profile?: {
@@ -371,7 +371,7 @@ describe('schema transformation workflows', () => {
     >
     type UserUpdate = InferFromSchema<UserUpdateSchema>
 
-    expectTypeOf<UserUpdate>().toMatchTypeOf<{
+    expectTypeOf<UserUpdate>().toExtend<{
       username?: string
       email?: string
       profile?: {
@@ -396,7 +396,7 @@ describe('schema transformation workflows', () => {
     >
     type UserRegistration = InferFromSchema<UserRegistrationSchema>
 
-    expectTypeOf<UserRegistration>().toMatchTypeOf<{
+    expectTypeOf<UserRegistration>().toExtend<{
       username: string
       email: string
       profile?: {
@@ -423,7 +423,7 @@ describe('schema transformation workflows', () => {
     >
     type AuthorWithPosts = InferFromSchema<AuthorWithPostsSchema>
 
-    expectTypeOf<AuthorWithPosts>().toMatchTypeOf<{
+    expectTypeOf<AuthorWithPosts>().toExtend<{
       id: string // Required from both schemas
       username: string // Required from user schema
       profile?: {
@@ -479,7 +479,7 @@ describe('dynamic schema building patterns', () => {
 
     type ListViewType = InferFromSchema<ListView>
 
-    expectTypeOf<ListViewType>().toMatchTypeOf<{
+    expectTypeOf<ListViewType>().toExtend<{
       id: string
       name?: string
     }>()
@@ -537,7 +537,7 @@ describe('dynamic schema building patterns', () => {
     expectTypeOf<AdminUser['adminLevel']>().toEqualTypeOf<number>()
 
     // Test that regular users have subscription fields
-    expectTypeOf<RegularUser['subscription']>().toMatchTypeOf<{
+    expectTypeOf<RegularUser['subscription']>().toExtend<{
       plan: string
       expiresAt?: string
     } | undefined>()
@@ -582,7 +582,7 @@ describe('performance and edge cases', () => {
     type DeepPointers = JsonPointers<DeepType>
 
     // Should be able to access deeply nested properties
-    expectTypeOf<'/level1/level2/level3/level4/level5/value'>().toMatchTypeOf<DeepPointers>()
+    expectTypeOf<'/level1/level2/level3/level4/level5/value'>().toExtend<DeepPointers>()
 
     const deepData = {
       level1: {
@@ -648,7 +648,7 @@ describe('performance and edge cases', () => {
     type ComplexArrayType = InferFromSchema<typeof complexArraySchema>
     type ComplexPointers = JsonPointers<ComplexArrayType>
 
-    expectTypeOf<'/users/0/posts/0/comments/0/text'>().toMatchTypeOf<ComplexPointers>()
+    expectTypeOf<'/users/0/posts/0/comments/0/text'>().toExtend<ComplexPointers>()
 
     const complexData = {
       users: [

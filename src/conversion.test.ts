@@ -79,7 +79,7 @@ describe('validateDataAgainstSchemaType', () => {
 
     if (validateDataAgainstSchemaType(data, userSchema)) {
       // TypeScript should infer the correct type here
-      expectTypeOf(data).toMatchTypeOf<{
+      expectTypeOf(data).toExtend<{
         name: string
         age: number
         isActive?: boolean
@@ -582,7 +582,7 @@ describe('schema utility types', () => {
     type MergedType = InferFromSchema<MergedSchema>
 
     // The merged schema should have all properties with appropriate required/optional status
-    expectTypeOf<MergedType>().toMatchTypeOf<{
+    expectTypeOf<MergedType>().toExtend<{
       id: string
       name: string
       email: string
@@ -596,23 +596,23 @@ describe('jsonPointers integration with schema types', () => {
     type UserPointers = JsonPointers<UserType>
 
     // Test that specific pointers are included in the union
-    expectTypeOf<'/name'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/age'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/isActive'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/tags'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/tags/0'>().toMatchTypeOf<UserPointers>()
+    expectTypeOf<'/name'>().toExtend<UserPointers>()
+    expectTypeOf<'/age'>().toExtend<UserPointers>()
+    expectTypeOf<'/isActive'>().toExtend<UserPointers>()
+    expectTypeOf<'/tags'>().toExtend<UserPointers>()
+    expectTypeOf<'/tags/0'>().toExtend<UserPointers>()
 
     // Test that invalid pointers are excluded
-    expectTypeOf<'/invalid'>().not.toMatchTypeOf<UserPointers>()
+    expectTypeOf<'/invalid'>().not.toExtend<UserPointers>()
   })
 
   it('should work with nested schema types', () => {
     type ProfileType = InferFromSchema<typeof profileSchema>
     type ProfilePointers = JsonPointers<ProfileType>
 
-    expectTypeOf<'/user'>().toMatchTypeOf<ProfilePointers>()
-    expectTypeOf<'/user/name'>().toMatchTypeOf<ProfilePointers>()
-    expectTypeOf<'/user/settings'>().toMatchTypeOf<ProfilePointers>()
-    expectTypeOf<'/user/settings/theme'>().toMatchTypeOf<ProfilePointers>()
+    expectTypeOf<'/user'>().toExtend<ProfilePointers>()
+    expectTypeOf<'/user/name'>().toExtend<ProfilePointers>()
+    expectTypeOf<'/user/settings'>().toExtend<ProfilePointers>()
+    expectTypeOf<'/user/settings/theme'>().toExtend<ProfilePointers>()
   })
 })

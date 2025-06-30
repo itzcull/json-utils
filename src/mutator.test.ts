@@ -86,7 +86,7 @@ describe(setJsonValueAtPointer.name, () => {
   it('should handle very deep nesting', ({ expect }) => {
     const obj = {} satisfies JSONObject
     setJsonValueAtPointer(obj, '/a/b/c/d/e/f/g/h/i/j', 'deep')
-    expect(obj.a.b.c.d.e.f.g.h.i.j).toBe('deep')
+    expect(obj).toEqual({ a: { b: { c: { d: { e: { f: { g: { h: { i: { j: 'deep' } } } } } } } } } })
   })
 
   it('should set a value in an existing nested structure', ({ expect }) => {
@@ -97,12 +97,12 @@ describe(setJsonValueAtPointer.name, () => {
 
   it('should throw error when setting undefined', ({ expect }) => {
     const obj = {} satisfies JSONObject
-    expect(() => setJsonValueAtPointer(obj, '/a', undefined)).toThrow()
+    expect(() => setJsonValueAtPointer(obj, '/a', undefined as any)).toThrow()
   })
 
   it('should throw error when setting Date', ({ expect }) => {
     const obj = {} satisfies JSONObject
-    expect(() => setJsonValueAtPointer(obj, '/a', new Date())).toThrow()
+    expect(() => setJsonValueAtPointer(obj, '/a', new Date() as any)).toThrow()
   })
 
   it('should handle setting null', ({ expect }) => {

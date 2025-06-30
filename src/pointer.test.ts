@@ -491,14 +491,14 @@ describe('jsonPointers utility type with expectTypeOf', () => {
       type _DebugType = SimplePointers
 
       // Test specific valid pointer literals
-      expectTypeOf<''>().toMatchTypeOf<SimplePointers>()
-      expectTypeOf<'/name'>().toMatchTypeOf<SimplePointers>()
-      expectTypeOf<'/age'>().toMatchTypeOf<SimplePointers>()
-      expectTypeOf<'/active'>().toMatchTypeOf<SimplePointers>()
+      expectTypeOf<''>().toExtend<SimplePointers>()
+      expectTypeOf<'/name'>().toExtend<SimplePointers>()
+      expectTypeOf<'/age'>().toExtend<SimplePointers>()
+      expectTypeOf<'/active'>().toExtend<SimplePointers>()
 
       // These should cause type errors when uncommented (testing that invalid paths are rejected):
-      // expectTypeOf<'/invalid'>().toMatchTypeOf<SimplePointers>()
-      // expectTypeOf<'/name/nested'>().toMatchTypeOf<SimplePointers>()
+      // expectTypeOf<'/invalid'>().toExtend<SimplePointers>()
+      // expectTypeOf<'/name/nested'>().toExtend<SimplePointers>()
 
       // Test runtime integration
       const simpleObj: SimpleObject = { name: 'test', age: 25, active: true }
@@ -527,22 +527,22 @@ describe('jsonPointers utility type with expectTypeOf', () => {
       type NestedPointers = JsonPointers<NestedObject>
 
       // Test valid nested pointer literals
-      expectTypeOf<''>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/user'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/user/profile'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/user/profile/firstName'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/user/profile/lastName'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/user/settings'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/user/settings/theme'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/user/settings/notifications'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/metadata'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/metadata/createdAt'>().toMatchTypeOf<NestedPointers>()
-      expectTypeOf<'/metadata/updatedAt'>().toMatchTypeOf<NestedPointers>()
+      expectTypeOf<''>().toExtend<NestedPointers>()
+      expectTypeOf<'/user'>().toExtend<NestedPointers>()
+      expectTypeOf<'/user/profile'>().toExtend<NestedPointers>()
+      expectTypeOf<'/user/profile/firstName'>().toExtend<NestedPointers>()
+      expectTypeOf<'/user/profile/lastName'>().toExtend<NestedPointers>()
+      expectTypeOf<'/user/settings'>().toExtend<NestedPointers>()
+      expectTypeOf<'/user/settings/theme'>().toExtend<NestedPointers>()
+      expectTypeOf<'/user/settings/notifications'>().toExtend<NestedPointers>()
+      expectTypeOf<'/metadata'>().toExtend<NestedPointers>()
+      expectTypeOf<'/metadata/createdAt'>().toExtend<NestedPointers>()
+      expectTypeOf<'/metadata/updatedAt'>().toExtend<NestedPointers>()
 
       // Test invalid pointers (these should cause type errors when uncommented):
-      // expectTypeOf<'/invalid'>().toMatchTypeOf<NestedPointers>()
-      // expectTypeOf<'/user/invalid'>().toMatchTypeOf<NestedPointers>()
-      // expectTypeOf<'/user/profile/invalid'>().toMatchTypeOf<NestedPointers>()
+      // expectTypeOf<'/invalid'>().toExtend<NestedPointers>()
+      // expectTypeOf<'/user/invalid'>().toExtend<NestedPointers>()
+      // expectTypeOf<'/user/profile/invalid'>().toExtend<NestedPointers>()
 
       // Test runtime usage
       const nestedObj: NestedObject = {
@@ -572,25 +572,25 @@ describe('jsonPointers utility type with expectTypeOf', () => {
       type ArrayPointers = JsonPointers<ObjectWithArrays>
 
       // Test root and object pointers
-      expectTypeOf<''>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/items'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/users'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/settings'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/settings/features'>().toMatchTypeOf<ArrayPointers>()
+      expectTypeOf<''>().toExtend<ArrayPointers>()
+      expectTypeOf<'/items'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/users'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/settings'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/settings/features'>().toExtend<ArrayPointers>()
 
       // Test array index pointers (arrays generate /0 index paths)
-      expectTypeOf<'/items/0'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/users/0'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/users/0/id'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/users/0/name'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/users/0/tags'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/users/0/tags/0'>().toMatchTypeOf<ArrayPointers>()
-      expectTypeOf<'/settings/features/0'>().toMatchTypeOf<ArrayPointers>()
+      expectTypeOf<'/items/0'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/users/0'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/users/0/id'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/users/0/name'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/users/0/tags'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/users/0/tags/0'>().toExtend<ArrayPointers>()
+      expectTypeOf<'/settings/features/0'>().toExtend<ArrayPointers>()
 
       // Test invalid pointers (should cause type errors when uncommented):
-      // expectTypeOf<'/items/invalid'>().toMatchTypeOf<ArrayPointers>()
-      // expectTypeOf<'/users/0/invalid'>().toMatchTypeOf<ArrayPointers>()
-      // expectTypeOf<'/settings/invalid'>().toMatchTypeOf<ArrayPointers>()
+      // expectTypeOf<'/items/invalid'>().toExtend<ArrayPointers>()
+      // expectTypeOf<'/users/0/invalid'>().toExtend<ArrayPointers>()
+      // expectTypeOf<'/settings/invalid'>().toExtend<ArrayPointers>()
 
       // Test runtime usage
       const arrayObj: ObjectWithArrays = {
@@ -615,14 +615,14 @@ describe('jsonPointers utility type with expectTypeOf', () => {
       expectTypeOf<NullPointers>().toEqualTypeOf<''>()
 
       // Test root pointer assignment
-      expectTypeOf<''>().toMatchTypeOf<StringPointers>()
-      expectTypeOf<''>().toMatchTypeOf<NumberPointers>()
-      expectTypeOf<''>().toMatchTypeOf<BooleanPointers>()
-      expectTypeOf<''>().toMatchTypeOf<NullPointers>()
+      expectTypeOf<''>().toExtend<StringPointers>()
+      expectTypeOf<''>().toExtend<NumberPointers>()
+      expectTypeOf<''>().toExtend<BooleanPointers>()
+      expectTypeOf<''>().toExtend<NullPointers>()
 
       // Invalid paths should cause type errors (when uncommented):
-      // expectTypeOf<'/invalid'>().toMatchTypeOf<StringPointers>()
-      // expectTypeOf<'/invalid'>().toMatchTypeOf<NumberPointers>()
+      // expectTypeOf<'/invalid'>().toExtend<StringPointers>()
+      // expectTypeOf<'/invalid'>().toExtend<NumberPointers>()
 
       // Test runtime usage
       const stringPointer: StringPointers = ''
@@ -642,16 +642,16 @@ describe('jsonPointers utility type with expectTypeOf', () => {
       type OptionalPointers = JsonPointers<OptionalObject>
 
       // All properties should be reachable regardless of optionality
-      expectTypeOf<''>().toMatchTypeOf<OptionalPointers>()
-      expectTypeOf<'/required'>().toMatchTypeOf<OptionalPointers>()
-      expectTypeOf<'/optional'>().toMatchTypeOf<OptionalPointers>()
-      expectTypeOf<'/nested'>().toMatchTypeOf<OptionalPointers>()
-      expectTypeOf<'/nested/value'>().toMatchTypeOf<OptionalPointers>()
-      expectTypeOf<'/nested/optional'>().toMatchTypeOf<OptionalPointers>()
+      expectTypeOf<''>().toExtend<OptionalPointers>()
+      expectTypeOf<'/required'>().toExtend<OptionalPointers>()
+      expectTypeOf<'/optional'>().toExtend<OptionalPointers>()
+      expectTypeOf<'/nested'>().toExtend<OptionalPointers>()
+      expectTypeOf<'/nested/value'>().toExtend<OptionalPointers>()
+      expectTypeOf<'/nested/optional'>().toExtend<OptionalPointers>()
 
       // Invalid paths should cause type errors (when uncommented):
-      // expectTypeOf<'/invalid'>().toMatchTypeOf<OptionalPointers>()
-      // expectTypeOf<'/nested/invalid'>().toMatchTypeOf<OptionalPointers>()
+      // expectTypeOf<'/invalid'>().toExtend<OptionalPointers>()
+      // expectTypeOf<'/nested/invalid'>().toExtend<OptionalPointers>()
 
       // Test runtime usage
       const optObj: OptionalObject = { required: 'test', optional: 'value' }

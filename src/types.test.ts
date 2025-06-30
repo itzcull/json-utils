@@ -2,6 +2,7 @@ import type {
   DeepReadonly,
   InferFromSchema,
   InferSchemaFromData,
+  JSONObject,
   JsonPointers,
   JSONSchemaArray,
   JSONSchemaObject,
@@ -102,7 +103,7 @@ describe('inferFromSchema type tests', () => {
   it('should infer object types with required and optional properties', () => {
     type UserType = InferFromSchema<typeof userSchema>
 
-    expectTypeOf<UserType>().toMatchTypeOf<{
+    expectTypeOf<UserType>().toExtend<{
       id: string
       name: string
       age: number
@@ -149,7 +150,7 @@ describe('inferFromSchema type tests', () => {
     type ProfileType = NonNullable<UserType['profile']>
     type SettingsType = NonNullable<ProfileType['settings']>
 
-    expectTypeOf<ProfileType>().toMatchTypeOf<{
+    expectTypeOf<ProfileType>().toExtend<{
       bio?: string
       avatar?: string
       settings?: {
@@ -158,7 +159,7 @@ describe('inferFromSchema type tests', () => {
       }
     }>()
 
-    expectTypeOf<SettingsType>().toMatchTypeOf<{
+    expectTypeOf<SettingsType>().toExtend<{
       theme?: string
       notifications?: boolean
     }>()
@@ -177,7 +178,7 @@ describe('inferSchemaFromData type tests', () => {
     type UserSchemaType = InferSchemaFromData<UserData>
 
     // Test that it produces a valid JSONSchemaObject structure
-    expectTypeOf<UserSchemaType>().toMatchTypeOf<JSONSchemaObject>()
+    expectTypeOf<UserSchemaType>().toExtend<JSONSchemaObject>()
   })
 
   it('should handle primitive data types', () => {
@@ -186,18 +187,18 @@ describe('inferSchemaFromData type tests', () => {
     type BooleanSchema = InferSchemaFromData<boolean>
     type NullSchema = InferSchemaFromData<null>
 
-    expectTypeOf<StringSchema>().toMatchTypeOf<{ type: 'string' }>()
-    expectTypeOf<NumberSchema>().toMatchTypeOf<{ type: 'number' }>()
-    expectTypeOf<BooleanSchema>().toMatchTypeOf<{ type: 'boolean' }>()
-    expectTypeOf<NullSchema>().toMatchTypeOf<{ type: 'null' }>()
+    expectTypeOf<StringSchema>().toExtend<{ type: 'string' }>()
+    expectTypeOf<NumberSchema>().toExtend<{ type: 'number' }>()
+    expectTypeOf<BooleanSchema>().toExtend<{ type: 'boolean' }>()
+    expectTypeOf<NullSchema>().toExtend<{ type: 'null' }>()
   })
 
   it('should handle array data types', () => {
     type StringArraySchema = InferSchemaFromData<string[]>
     type NumberArraySchema = InferSchemaFromData<number[]>
 
-    expectTypeOf<StringArraySchema>().toMatchTypeOf<JSONSchemaArray>()
-    expectTypeOf<NumberArraySchema>().toMatchTypeOf<JSONSchemaArray>()
+    expectTypeOf<StringArraySchema>().toExtend<JSONSchemaArray>()
+    expectTypeOf<NumberArraySchema>().toExtend<JSONSchemaArray>()
   })
 })
 
@@ -206,7 +207,7 @@ describe('makeSchemaOptional type tests', () => {
     type UserWithOptionalEmail = MakeSchemaOptional<typeof userSchema, 'age'>
     type InferredType = InferFromSchema<UserWithOptionalEmail>
 
-    expectTypeOf<InferredType>().toMatchTypeOf<{
+    expectTypeOf<InferredType>().toExtend<{
       id: string
       name: string
       age?: number // Should now be optional
@@ -234,7 +235,7 @@ describe('makeSchemaOptional type tests', () => {
     type UserWithOptionalFields = MakeSchemaOptional<typeof userSchema, 'age' | 'name'>
     type InferredType = InferFromSchema<UserWithOptionalFields>
 
-    expectTypeOf<InferredType>().toMatchTypeOf<{
+    expectTypeOf<InferredType>().toExtend<{
       id: string // Still required
       name?: string // Now optional
       age?: number // Now optional
@@ -281,7 +282,7 @@ describe('mergeSchemas type tests', () => {
     type MergedSchema = MergeSchemas<typeof baseSchema, typeof extendedSchema>
     type MergedType = InferFromSchema<MergedSchema>
 
-    expectTypeOf<MergedType>().toMatchTypeOf<{
+    expectTypeOf<MergedType>().toExtend<{
       id: string // Required from base
       name: string // Present in both, should be required
       email: string // Required from extended
@@ -315,7 +316,7 @@ describe('mergeSchemas type tests', () => {
     type MergedSchema = MergeSchemas<typeof schema1, typeof schema2>
     type MergedType = InferFromSchema<MergedSchema>
 
-    expectTypeOf<MergedType>().toMatchTypeOf<{
+    expectTypeOf<MergedType>().toExtend<{
       a: string // Required from schema1
       b: string // Required from schema2 (present in both)
       c: string // Required from schema2
@@ -328,7 +329,7 @@ describe('partialSchema type tests', () => {
     type PartialUserSchema = PartialSchema<typeof userSchema>
     type PartialUserType = InferFromSchema<PartialUserSchema>
 
-    expectTypeOf<PartialUserType>().toMatchTypeOf<{
+    expectTypeOf<PartialUserType>().toExtend<{
       id?: string
       name?: string
       age?: number
@@ -357,15 +358,15 @@ describe('pickSchemaProperties type tests', () => {
     type PublicUserSchema = PickSchemaProperties<typeof userSchema, 'id' | 'name' | 'email'>
     type PublicUserType = InferFromSchema<PublicUserSchema>
 
-    expectTypeOf<PublicUserType>().toMatchTypeOf<{
+    expectTypeOf<PublicUserType>().toExtend<{
       id: string // Required in original
       name: string // Required in original
       email?: string // Optional in original
     }>()
 
     // Should not have other properties
-    expectTypeOf<PublicUserType>().not.toMatchTypeOf<{ age: number }>()
-    expectTypeOf<PublicUserType>().not.toMatchTypeOf<{ isActive: boolean }>()
+    expectTypeOf<PublicUserType>().not.toExtend<{ age: number }>()
+    expectTypeOf<PublicUserType>().not.toExtend<{ isActive: boolean }>()
   })
 
   it('should preserve required/optional status of picked properties', () => {
@@ -385,7 +386,7 @@ describe('omitSchemaProperties type tests', () => {
     type MinimalUserSchema = OmitSchemaProperties<typeof userSchema, 'tags' | 'profile' | 'isActive'>
     type MinimalUserType = InferFromSchema<MinimalUserSchema>
 
-    expectTypeOf<MinimalUserType>().toMatchTypeOf<{
+    expectTypeOf<MinimalUserType>().toExtend<{
       id: string
       name: string
       age: number
@@ -393,9 +394,9 @@ describe('omitSchemaProperties type tests', () => {
     }>()
 
     // Should not have omitted properties
-    expectTypeOf<MinimalUserType>().not.toMatchTypeOf<{ tags: string[] }>()
-    expectTypeOf<MinimalUserType>().not.toMatchTypeOf<{ profile: any }>()
-    expectTypeOf<MinimalUserType>().not.toMatchTypeOf<{ isActive: boolean }>()
+    expectTypeOf<MinimalUserType>().not.toExtend<{ tags: string[] }>()
+    expectTypeOf<MinimalUserType>().not.toExtend<{ profile: any }>()
+    expectTypeOf<MinimalUserType>().not.toExtend<{ isActive: boolean }>()
   })
 
   it('should preserve required/optional status of remaining properties', () => {
@@ -526,29 +527,29 @@ describe('jsonPointers integration with schema types', () => {
     type UserPointers = JsonPointers<UserType>
 
     // Test that specific pointers are included in the union
-    expectTypeOf<'/id'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/name'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/age'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/email'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/tags'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/tags/0'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/profile'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/profile/bio'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/profile/settings'>().toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/profile/settings/theme'>().toMatchTypeOf<UserPointers>()
+    expectTypeOf<'/id'>().toExtend<UserPointers>()
+    expectTypeOf<'/name'>().toExtend<UserPointers>()
+    expectTypeOf<'/age'>().toExtend<UserPointers>()
+    expectTypeOf<'/email'>().toExtend<UserPointers>()
+    expectTypeOf<'/tags'>().toExtend<UserPointers>()
+    expectTypeOf<'/tags/0'>().toExtend<UserPointers>()
+    expectTypeOf<'/profile'>().toExtend<UserPointers>()
+    expectTypeOf<'/profile/bio'>().toExtend<UserPointers>()
+    expectTypeOf<'/profile/settings'>().toExtend<UserPointers>()
+    expectTypeOf<'/profile/settings/theme'>().toExtend<UserPointers>()
 
     // Test that invalid pointers are excluded
-    expectTypeOf<'/invalid'>().not.toMatchTypeOf<UserPointers>()
-    expectTypeOf<'/profile/invalid'>().not.toMatchTypeOf<UserPointers>()
+    expectTypeOf<'/invalid'>().not.toExtend<UserPointers>()
+    expectTypeOf<'/profile/invalid'>().not.toExtend<UserPointers>()
   })
 
   it('should work with array schema types', () => {
     type ArrayType = InferFromSchema<typeof arraySchema>
     type ArrayPointers = JsonPointers<ArrayType>
 
-    expectTypeOf<'/0'>().toMatchTypeOf<ArrayPointers>()
-    expectTypeOf<'/0/id'>().toMatchTypeOf<ArrayPointers>()
-    expectTypeOf<'/0/name'>().toMatchTypeOf<ArrayPointers>()
+    expectTypeOf<'/0'>().toExtend<ArrayPointers>()
+    expectTypeOf<'/0/id'>().toExtend<ArrayPointers>()
+    expectTypeOf<'/0/name'>().toExtend<ArrayPointers>()
   })
 
   it('should work with transformed schema types', () => {
@@ -557,9 +558,9 @@ describe('jsonPointers integration with schema types', () => {
     type PartialUserPointers = JsonPointers<PartialUserType>
 
     // Should still have all the same pointers even though properties are optional
-    expectTypeOf<'/id'>().toMatchTypeOf<PartialUserPointers>()
-    expectTypeOf<'/name'>().toMatchTypeOf<PartialUserPointers>()
-    expectTypeOf<'/profile/settings/theme'>().toMatchTypeOf<PartialUserPointers>()
+    expectTypeOf<'/id'>().toExtend<PartialUserPointers>()
+    expectTypeOf<'/name'>().toExtend<PartialUserPointers>()
+    expectTypeOf<'/profile/settings/theme'>().toExtend<PartialUserPointers>()
   })
 })
 
@@ -572,7 +573,7 @@ describe('complex type transformations', () => {
     >
     type ModifiedType = InferFromSchema<ModifiedSchema>
 
-    expectTypeOf<ModifiedType>().toMatchTypeOf<{
+    expectTypeOf<ModifiedType>().toExtend<{
       id: string // Required originally
       name: string // Required originally
       age?: number // Made optional, then picked
@@ -586,7 +587,7 @@ describe('complex type transformations', () => {
     type PartialMergedType = InferFromSchema<PartialMergedSchema>
 
     // All properties from both schemas should be optional
-    expectTypeOf<PartialMergedType>().toMatchTypeOf<{
+    expectTypeOf<PartialMergedType>().toExtend<{
       id?: string | number // Could be from either schema
       name?: string
       age?: number
@@ -614,13 +615,13 @@ describe('edge cases and error handling', () => {
     const emptySchema = {
       type: 'object',
       properties: {},
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     // Use schema at runtime to satisfy linter
     void emptySchema
 
     type EmptyType = InferFromSchema<typeof emptySchema>
-    expectTypeOf<EmptyType>().toEqualTypeOf<Record<string, unknown>>()
+    expectTypeOf<EmptyType>().toEqualTypeOf<JSONObject>()
   })
 
   it('should handle schemas with no required properties', () => {
@@ -636,7 +637,7 @@ describe('edge cases and error handling', () => {
     void allOptionalSchema
 
     type AllOptionalType = InferFromSchema<typeof allOptionalSchema>
-    expectTypeOf<AllOptionalType>().toMatchTypeOf<{
+    expectTypeOf<AllOptionalType>().toExtend<{
       a?: string
       b?: number
     }>()
@@ -656,7 +657,7 @@ describe('edge cases and error handling', () => {
     void allRequiredSchema
 
     type AllRequiredType = InferFromSchema<typeof allRequiredSchema>
-    expectTypeOf<AllRequiredType>().toMatchTypeOf<{
+    expectTypeOf<AllRequiredType>().toExtend<{
       a: string
       b: number
     }>()

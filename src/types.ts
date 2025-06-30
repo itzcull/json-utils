@@ -1,3 +1,5 @@
+import type { Simplify } from 'type-fest'
+
 export type JSONPrimitive = string | number | boolean | null
 
 export type JSONType = JSONPrimitive | JSONObject | JSONArray
@@ -460,7 +462,7 @@ export type JSONSchema =
  * const invalid: User = { name: 'John' } // ❌ Error: missing 'age'
  * ```
  */
-export type InferFromSchema<S extends JSONSchema> =
+export type InferFromSchema<S extends JSONSchema> = Simplify<
   S extends JSONSchemaString ? string :
     S extends JSONSchemaNumber ? number :
       S extends JSONSchemaInteger ? number :
@@ -471,6 +473,7 @@ export type InferFromSchema<S extends JSONSchema> =
                 S extends JSONSchemaMultiType ? InferMultiTypeFromSchema<S> :
                   S extends JSONSchemaGeneric ? InferGenericFromSchema<S> :
                     unknown
+>
 
 /**
  * Helper type to infer array type from JSON Schema array definition
@@ -803,7 +806,7 @@ export type PickSchemaProperties<S extends JSONSchemaObject, K extends keyof S['
  * ```
  */
 export type OmitSchemaProperties<S extends JSONSchemaObject, K extends keyof S['properties']> =
-  S extends { properties: Record<string, any> }
+  Simplify<S extends { properties: Record<string, any> }
     ? JSONSchemaObject & {
       type: 'object'
       properties: Omit<S['properties'], K>
@@ -813,7 +816,7 @@ export type OmitSchemaProperties<S extends JSONSchemaObject, K extends keyof S['
           : Exclude<S['required'][number], K>[]
         : never
     }
-    : never
+    : never>
 
 /**
  * Utility type to check if a type extends another type
