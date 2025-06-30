@@ -269,7 +269,7 @@ export function toJsonSchemaPointer(pointer: string): string {
  *
  * @category JSON
  */
-export function getJsonValueAtPointer(obj: JSONType, pointer: string): JSONType | undefined {
+export function getJsonValueAtPointer<T extends JSONType>(obj: T, pointer: string): JSONType | undefined {
   const ROOT_POINTERS = ['/', '']
   if (ROOT_POINTERS.includes(pointer)) {
     return obj
@@ -394,7 +394,7 @@ export function getJsonValueAtPointer(obj: JSONType, pointer: string): JSONType 
  *
  * @category JSON
  */
-export function getAllJsonPointers(obj: JSONType, prefix: string = ''): string[] {
+export function getAllJsonPointers<T extends JSONType>(obj: T, prefix: string = ''): string[] {
   const pointers: string[] = [prefix || '']
 
   if (obj === null || obj === undefined) {

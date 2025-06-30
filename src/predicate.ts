@@ -290,7 +290,7 @@ export function isJsonPointer(pointer: string): boolean {
   return typeof pointer === 'string' && (pointer === '' || (pointer.startsWith('/') && pointer.split('/').length > 0))
 }
 
-// isJsonValueType
+// isJsonTypeName
 export const VALID_JSON_TYPE_NAMES = new Set<string>([
   'array',
   'boolean',
@@ -312,28 +312,28 @@ export const VALID_JSON_TYPE_NAMES = new Set<string>([
  *
  * @example
  * ```typescript
- * import { isJsonValueType } from '@itzcull/json-utils/json'
+ * import { isJsonTypeName } from '@itzcull/json-utils/json'
  *
  * // Valid JSON type names
- * isJsonValueType('string') // true
- * isJsonValueType('number') // true
- * isJsonValueType('boolean') // true
- * isJsonValueType('object') // true
- * isJsonValueType('array') // true
- * isJsonValueType('null') // true
- * isJsonValueType('integer') // true
+ * isJsonTypeName('string') // true
+ * isJsonTypeName('number') // true
+ * isJsonTypeName('boolean') // true
+ * isJsonTypeName('object') // true
+ * isJsonTypeName('array') // true
+ * isJsonTypeName('null') // true
+ * isJsonTypeName('integer') // true
  *
  * // Invalid type names
- * isJsonValueType('function') // false
- * isJsonValueType('undefined') // false
- * isJsonValueType('symbol') // false
- * isJsonValueType('bigint') // false
- * isJsonValueType('date') // false
- * isJsonValueType(123) // false (not a string)
+ * isJsonTypeName('function') // false
+ * isJsonTypeName('undefined') // false
+ * isJsonTypeName('symbol') // false
+ * isJsonTypeName('bigint') // false
+ * isJsonTypeName('date') // false
+ * isJsonTypeName(123) // false (not a string)
  *
  * // Schema validation
  * function validateSchemaType(schema: { type: unknown }) {
- *   if (!isJsonValueType(schema.type)) {
+ *   if (!isJsonTypeName(schema.type)) {
  *     throw new Error(`Invalid schema type: ${schema.type}`)
  *   }
  *   // TypeScript knows schema.type is JSONTypeName
@@ -342,7 +342,7 @@ export const VALID_JSON_TYPE_NAMES = new Set<string>([
  *
  * // Dynamic type checking
  * function createValidator(typeName: string) {
- *   if (!isJsonValueType(typeName)) {
+ *   if (!isJsonTypeName(typeName)) {
  *     throw new Error(`Unsupported type: ${typeName}`)
  *   }
  *
@@ -369,7 +369,7 @@ export const VALID_JSON_TYPE_NAMES = new Set<string>([
  * }
  *
  * Object.entries(apiSchema.properties).forEach(([field, schema]) => {
- *   if (isJsonValueType(schema.type)) {
+ *   if (isJsonTypeName(schema.type)) {
  *     console.log(`Field ${field} has valid type: ${schema.type}`)
  *   }
  * })
@@ -377,8 +377,7 @@ export const VALID_JSON_TYPE_NAMES = new Set<string>([
  *
  * @category JSON
  */
-// TODO: Consider renaming to isJsonTypeName for clarity
-export function isJsonValueType(val: unknown): val is JSONTypeName {
+export function isJsonTypeName(val: unknown): val is JSONTypeName {
   if (typeof val !== 'string')
     return false
   return VALID_JSON_TYPE_NAMES.has(val)

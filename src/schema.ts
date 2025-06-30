@@ -97,7 +97,7 @@ import type { JSONSchema, JSONSchemaDefinition, JSONType } from './types'
  *
  * @category JSON
  */
-export function createJsonSchema(value: JSONType): JSONSchema {
+export function createJsonSchema<T extends JSONType>(value: T): JSONSchema {
   const type = typeof value
 
   if (type === 'function' || type === 'symbol' || type === 'bigint' || type === 'undefined') {
@@ -153,11 +153,11 @@ export function createJsonSchema(value: JSONType): JSONSchema {
  *
  * @example
  * ```typescript
- * import { deleteUndefinedKeys } from '@itzcull/json-utils/json'
+ * import { removeUndefinedValues } from '@itzcull/json-utils/json'
  *
  * // Object cleaning
  * const user = { name: 'John', age: undefined, email: 'john@example.com' }
- * deleteUndefinedKeys(user) // { name: 'John', email: 'john@example.com' }
+ * removeUndefinedValues(user) // { name: 'John', email: 'john@example.com' }
  *
  * // Nested object cleaning
  * const data = {
@@ -165,7 +165,7 @@ export function createJsonSchema(value: JSONType): JSONSchema {
  *   config: { debug: true, secret: undefined },
  *   meta: undefined
  * }
- * deleteUndefinedKeys(data)
+ * removeUndefinedValues(data)
  * // {
  * //   user: { name: 'John' },
  * //   config: { debug: true }
@@ -176,7 +176,7 @@ export function createJsonSchema(value: JSONType): JSONSchema {
  *   { id: 1, name: 'Item 1', temp: undefined },
  *   { id: 2, name: 'Item 2' }
  * ]
- * deleteUndefinedKeys(items)
+ * removeUndefinedValues(items)
  * // [
  * //   { id: 1, name: 'Item 1' },
  * //   { id: 2, name: 'Item 2' }
@@ -184,7 +184,7 @@ export function createJsonSchema(value: JSONType): JSONSchema {
  *
  * // API response cleaning
  * function cleanApiResponse(response: any) {
- *   return deleteUndefinedKeys(response)
+ *   return removeUndefinedValues(response)
  * }
  *
  * const apiResponse = {
@@ -201,7 +201,7 @@ export function createJsonSchema(value: JSONType): JSONSchema {
  * // Form data preparation
  * function prepareFormData(formData: Record<string, any>) {
  *   // Remove undefined fields before sending
- *   return deleteUndefinedKeys(formData)
+ *   return removeUndefinedValues(formData)
  * }
  *
  * // Configuration cleanup
@@ -210,22 +210,21 @@ export function createJsonSchema(value: JSONType): JSONSchema {
  *   cache: { enabled: true, ttl: undefined },
  *   features: undefined
  * }
- * const cleanConfig = deleteUndefinedKeys(config)
+ * const cleanConfig = removeUndefinedValues(config)
  * // {
  * //   database: { host: 'localhost' },
  * //   cache: { enabled: true }
  * // }
  *
  * // Primitive values (returned as-is)
- * deleteUndefinedKeys('hello') // 'hello'
- * deleteUndefinedKeys(42) // 42
- * deleteUndefinedKeys(null) // null
+ * removeUndefinedValues('hello') // 'hello'
+ * removeUndefinedValues(42) // 42
+ * removeUndefinedValues(null) // null
  * ```
  *
  * @category JSON
  */
-// TODO: Consider renaming to removeUndefinedValues for consistency with removeJsonValueAtPointer
-export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
+export function removeUndefinedValues<T extends JSONType>(data: T): T {
   if (data === null || typeof data !== 'object') {
     return data
   }
@@ -233,7 +232,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
   if (Array.isArray(data)) {
     for (let i = 0; i < data.length; i++) {
       if (data[i] !== undefined) {
-        data[i] = deleteUndefinedKeys(data[i] as JSONType)
+        data[i] = removeUndefinedValues(data[i] as JSONType)
       }
     }
     return data
@@ -244,7 +243,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
       delete data[key]
     }
     else if (typeof data[key] === 'object') {
-      data[key] = deleteUndefinedKeys(data[key] as JSONType)
+      data[key] = removeUndefinedValues(data[key] as JSONType)
     }
   }
 
@@ -264,7 +263,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
  *
  * @example
  * ```typescript
- * import { generatePointersFromJsonSchema } from '@itzcull/json-utils/json'
+ * import { getAllJsonPointersFromSchema } from '@itzcull/json-utils/json'
  *
  * // Simple object schema
  * const userSchema = {
@@ -274,7 +273,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
  *     age: { type: 'number' }
  *   }
  * }
- * generatePointersFromJsonSchema(userSchema)
+ * getAllJsonPointersFromSchema(userSchema)
  * // ['/name', '/age']
  *
  * // Nested object schema
@@ -295,7 +294,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
  *     }
  *   }
  * }
- * generatePointersFromJsonSchema(profileSchema)
+ * getAllJsonPointersFromSchema(profileSchema)
  * // ['/user', '/user/name', '/user/settings', '/user/settings/theme']
  *
  * // Array schema
@@ -314,7 +313,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
  *     }
  *   }
  * }
- * generatePointersFromJsonSchema(listSchema)
+ * getAllJsonPointersFromSchema(listSchema)
  * // ['/items', '/items/0', '/items/0/id', '/items/0/name']
  *
  * // API schema analysis
@@ -349,19 +348,19 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
  *     }
  *   }
  * }
- * const pointers = generatePointersFromJsonSchema(apiSchema)
+ * const pointers = getAllJsonPointersFromSchema(apiSchema)
  * // ['/data', '/data/users', '/data/users/0', '/data/users/0/id',
  * //  '/data/users/0/profile', '/data/users/0/profile/name', '/meta', '/meta/total']
  *
  * // Form field enumeration
  * function getFormFields(formSchema: JSONSchema) {
- *   return generatePointersFromJsonSchema(formSchema)
+ *   return getAllJsonPointersFromSchema(formSchema)
  *     .filter(pointer => !pointer.includes('/0')) // Exclude array indices
  * }
  *
  * // Validation path generation
  * function createValidationPaths(schema: JSONSchema) {
- *   const allPaths = generatePointersFromJsonSchema(schema)
+ *   const allPaths = getAllJsonPointersFromSchema(schema)
  *   return allPaths.map(path => ({
  *     pointer: path,
  *     validator: createValidatorForPath(schema, path)
@@ -371,8 +370,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
  *
  * @category JSON
  */
-// TODO: Consider renaming to getAllJsonPointersFromSchema for consistency with getAllJsonPointers
-export function generatePointersFromJsonSchema(schema: JSONSchema, prefix: string = ''): string[] {
+export function getAllJsonPointersFromSchema<T extends JSONSchema>(schema: T, prefix: string = ''): string[] {
   const pointers: string[] = []
 
   if (schema.type === 'object' && schema.properties) {
@@ -381,7 +379,7 @@ export function generatePointersFromJsonSchema(schema: JSONSchema, prefix: strin
       pointers.push(newPrefix)
 
       if (typeof value === 'object') {
-        pointers.push(...generatePointersFromJsonSchema(value, newPrefix))
+        pointers.push(...getAllJsonPointersFromSchema(value, newPrefix))
       }
     }
   }
@@ -391,13 +389,13 @@ export function generatePointersFromJsonSchema(schema: JSONSchema, prefix: strin
         const newPrefix = `${prefix}/${index}`
         pointers.push(newPrefix)
         if (typeof item === 'object') {
-          pointers.push(...generatePointersFromJsonSchema(item, newPrefix))
+          pointers.push(...getAllJsonPointersFromSchema(item, newPrefix))
         }
       })
     }
     else if (typeof schema.items === 'object') {
       pointers.push(`${prefix}/0`)
-      pointers.push(...generatePointersFromJsonSchema(schema.items, `${prefix}/0`))
+      pointers.push(...getAllJsonPointersFromSchema(schema.items, `${prefix}/0`))
     }
   }
 

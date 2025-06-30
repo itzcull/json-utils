@@ -62,7 +62,7 @@ import { isJsonArray, isJsonObject, isJsonPointer, isJsonValue } from './predica
  *
  * @category JSON
  */
-export function setJsonValueAtPointer(obj: JSONObject, pointer: string, value: JSONType): void {
+export function setJsonValueAtPointer<T extends JSONObject>(obj: T, pointer: string, value: JSONType): void {
   if (!isJsonValue(value)) {
     throw new Error(`Invalid JSON value: ${JSON.stringify(value)}`)
   }
@@ -211,7 +211,7 @@ export function setJsonValueAtPointer(obj: JSONObject, pointer: string, value: J
  *
  * @category JSON
  */
-export function removeJsonValueAtPointer(json: JSONObject, pointer: string): void {
+export function removeJsonValueAtPointer<T extends JSONObject>(json: T, pointer: string): void {
   if (!isJsonPointer(pointer)) {
     throw new Error(`Invalid JSON Pointer: ${pointer}`)
   }

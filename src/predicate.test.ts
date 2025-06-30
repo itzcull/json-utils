@@ -3,8 +3,8 @@ import {
   isJsonArray,
   isJsonObject,
   isJsonPointer,
+  isJsonTypeName,
   isJsonValue,
-  isJsonValueType,
   VALID_JSON_TYPE_NAMES,
 } from './predicate'
 
@@ -240,12 +240,12 @@ describe(isJsonValue.name, () => {
   })
 })
 
-// isJsonValueType tests
+// isJsonTypeName tests
 
-describe(isJsonValueType.name, () => {
+describe(isJsonTypeName.name, () => {
   it('should return true for valid JSON schema type names', () => {
     VALID_JSON_TYPE_NAMES.forEach((type) => {
-      expect(isJsonValueType(type)).toBe(true)
+      expect(isJsonTypeName(type)).toBe(true)
     })
   })
 
@@ -265,7 +265,7 @@ describe(isJsonValueType.name, () => {
     ]
 
     invalidTypes.forEach((type) => {
-      expect(isJsonValueType(type)).toBe(false)
+      expect(isJsonTypeName(type)).toBe(false)
     })
   })
 
@@ -273,16 +273,16 @@ describe(isJsonValueType.name, () => {
     const nonStringValues = [null, undefined, 123, true, false, [], {}, () => {}]
 
     nonStringValues.forEach((value) => {
-      expect(isJsonValueType(value)).toBe(false)
+      expect(isJsonTypeName(value)).toBe(false)
     })
   })
 
   it('should handle empty string', () => {
-    expect(isJsonValueType('')).toBe(false)
+    expect(isJsonTypeName('')).toBe(false)
   })
 
   it('should handle case sensitivity', () => {
-    expect(isJsonValueType('STRING')).toBe(false)
-    expect(isJsonValueType('Array')).toBe(false)
+    expect(isJsonTypeName('STRING')).toBe(false)
+    expect(isJsonTypeName('Array')).toBe(false)
   })
 })

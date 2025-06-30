@@ -70,6 +70,33 @@ export type JsonPointers<T, Prefix extends string = ''> =
       : // T is a primitive value, return only the current prefix
       Prefix
 
+/**
+ * Utility type to get the value type at a specific JSON Pointer path
+ * @template T - The JSON object type
+ * @template P - The JSON Pointer path
+ */
+export type JsonPointerValue<T, P extends string> =
+    P extends '' ? T :
+      P extends `/${infer Rest}` ? JsonPointerValueRec<T, Rest> :
+        never
+
+type JsonPointerValueRec<T, P extends string> =
+    P extends `${infer K}/${infer Rest}`
+      ? K extends keyof T
+        ? JsonPointerValueRec<T[K], Rest>
+        : K extends `${number}`
+          ? T extends readonly (infer U)[]
+            ? JsonPointerValueRec<U, Rest>
+            : never
+          : never
+      : P extends keyof T
+        ? T[P]
+        : P extends `${number}`
+          ? T extends readonly (infer U)[]
+            ? U
+            : never
+          : never
+
 export type JSONSchemaDefinition = JSONSchema | boolean
 
 export type JSONTypeName = 'string' | 'number' | 'integer' | 'boolean' | 'object' | 'array' | 'null'
@@ -79,7 +106,7 @@ export type JSONSchemaVersion = string
 /**
  * Base interface containing common JSON Schema properties
  */
-interface JSONSchemaBase {
+export interface JSONSchemaBase {
   $id?: string | undefined
   $ref?: string | undefined
   $schema?: JSONSchemaVersion | undefined
@@ -147,7 +174,7 @@ interface JSONSchemaBase {
 /**
  * JSON Schema for string type
  */
-interface JSONSchemaString extends JSONSchemaBase {
+export interface JSONSchemaString extends JSONSchemaBase {
   type: 'string'
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.3
@@ -160,7 +187,7 @@ interface JSONSchemaString extends JSONSchemaBase {
 /**
  * JSON Schema for number type
  */
-interface JSONSchemaNumber extends JSONSchemaBase {
+export interface JSONSchemaNumber extends JSONSchemaBase {
   type: 'number'
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.2
@@ -175,7 +202,7 @@ interface JSONSchemaNumber extends JSONSchemaBase {
 /**
  * JSON Schema for integer type
  */
-interface JSONSchemaInteger extends JSONSchemaBase {
+export interface JSONSchemaInteger extends JSONSchemaBase {
   type: 'integer'
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.2
@@ -190,21 +217,21 @@ interface JSONSchemaInteger extends JSONSchemaBase {
 /**
  * JSON Schema for boolean type
  */
-interface JSONSchemaBoolean extends JSONSchemaBase {
+export interface JSONSchemaBoolean extends JSONSchemaBase {
   type: 'boolean'
 }
 
 /**
  * JSON Schema for null type
  */
-interface JSONSchemaNull extends JSONSchemaBase {
+export interface JSONSchemaNull extends JSONSchemaBase {
   type: 'null'
 }
 
 /**
  * JSON Schema for array type
  */
-interface JSONSchemaArray extends JSONSchemaBase {
+export interface JSONSchemaArray extends JSONSchemaBase {
   type: 'array'
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.4
@@ -220,7 +247,7 @@ interface JSONSchemaArray extends JSONSchemaBase {
 /**
  * JSON Schema for object type
  */
-interface JSONSchemaObject extends JSONSchemaBase {
+export interface JSONSchemaObject extends JSONSchemaBase {
   type: 'object'
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.5
@@ -250,7 +277,7 @@ interface JSONSchemaObject extends JSONSchemaBase {
 /**
  * JSON Schema for multiple types
  */
-interface JSONSchemaMultiType extends JSONSchemaBase {
+export interface JSONSchemaMultiType extends JSONSchemaBase {
   type: JSONTypeName[]
   // Include all possible properties since multiple types are allowed
   /**
@@ -307,7 +334,7 @@ interface JSONSchemaMultiType extends JSONSchemaBase {
 /**
  * JSON Schema without type constraint (for use in definitions and partial schemas)
  */
-interface JSONSchemaGeneric extends JSONSchemaBase {
+export interface JSONSchemaGeneric extends JSONSchemaBase {
   type?: JSONTypeName | JSONTypeName[] | undefined
   // Include all possible properties since type is optional
   /**

@@ -77,7 +77,7 @@ import { isJsonArray, isJsonObject, isJsonPointer } from './predicate'
  *
  * @category JSON
  */
-export function validateJsonPointerPath(json: JSONObject, path: string): boolean {
+export function validateJsonPointerPath<T extends JSONObject>(json: T, path: string): boolean {
   try {
     if (!isJsonPointer(path)) {
       return false
@@ -162,7 +162,7 @@ export function validateJsonPointerPath(json: JSONObject, path: string): boolean
  *
  * @category JSON
  */
-export function coerceToJsonType(value: any, targetType: JSONTypeName): JSONType | null {
+export function coerceToJsonType<T extends JSONTypeName>(value: any, targetType: T): JSONType | null {
   // Handle already correct types
   switch (targetType) {
     case 'string':
@@ -319,7 +319,7 @@ export function coerceToJsonType(value: any, targetType: JSONTypeName): JSONType
  *
  * @category JSON
  */
-export function sanitizeJson(data: any): JSONType {
+export function sanitizeJson<T extends JSONType = JSONType>(data: any): T {
   const seen = new WeakSet()
 
   const sanitize = (value: any): JSONType => {
@@ -387,5 +387,5 @@ export function sanitizeJson(data: any): JSONType {
   }
 
   const result = sanitize(data)
-  return result === null ? {} : result
+  return (result === null ? {} : result) as T
 }

@@ -67,7 +67,7 @@ export interface DeepMergeOptions {
  *
  * @category JSON
  */
-export function deepMergeJson(...args: any[]): JSONObject {
+export function deepMergeJson<T extends JSONObject = JSONObject>(...args: any[]): T {
   // Extract options if last argument is options object
   let options: DeepMergeOptions = {}
   let objects: JSONObject[] = []
@@ -116,7 +116,7 @@ export function deepMergeJson(...args: any[]): JSONObject {
     return result
   }
 
-  return objects.reduce((acc, obj) => merge(acc, obj), {})
+  return objects.reduce((acc, obj) => merge(acc, obj), {}) as T
 }
 
 /**
@@ -189,7 +189,7 @@ export function deepMergeJson(...args: any[]): JSONObject {
  *
  * @category JSON
  */
-export function flattenJson(json: JSONType): Record<string, JSONType> {
+export function flattenJson<T extends JSONType>(json: T): Record<string, JSONType> {
   const result: Record<string, JSONType> = {}
 
   // Skip root pointer for flattening
@@ -269,7 +269,7 @@ export function flattenJson(json: JSONType): Record<string, JSONType> {
  *
  * @category JSON
  */
-export function unflattenJson(flat: Record<string, JSONType>): JSONObject {
+export function unflattenJson<T extends JSONObject = JSONObject>(flat: Record<string, JSONType>): T {
   const result: JSONObject = {}
 
   // Sort keys to ensure parent objects are created before children
@@ -293,7 +293,7 @@ export function unflattenJson(flat: Record<string, JSONType>): JSONObject {
     }
   }
 
-  return result
+  return result as T
 }
 
 /**
@@ -362,10 +362,10 @@ export function unflattenJson(flat: Record<string, JSONType>): JSONObject {
  *
  * @category JSON
  */
-export function mapJsonValues(
-  json: JSONType,
+export function mapJsonValues<T extends JSONType, R extends JSONType = T>(
+  json: T,
   mapper: (value: JSONType, path: string) => JSONType,
-): JSONType {
+): R {
   const transform = (value: JSONType, path: string): JSONType => {
     if (isJsonArray(value)) {
       return value.map((item, index) => transform(item, `${path}/${index}`))
@@ -380,7 +380,7 @@ export function mapJsonValues(
     return mapper(value, path)
   }
 
-  return transform(json, '')
+  return transform(json, '') as R
 }
 
 /**
@@ -464,7 +464,7 @@ export function mapJsonValues(
  *
  * @category JSON
  */
-export function filterJsonByPaths(json: JSONObject, paths: string[]): JSONObject {
+export function filterJsonByPaths<T extends JSONObject>(json: T, paths: string[]): JSONObject {
   const result: JSONObject = {}
 
   // Group paths by their common ancestors to optimize reconstruction

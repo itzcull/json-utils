@@ -170,7 +170,7 @@ export function deepEquals(a: JSONType, b: JSONType): boolean {
  *
  * @category JSON
  */
-export function getJsonDiff(source: JSONObject, target: JSONObject): JsonPatchOperation[] {
+export function getJsonDiff<T extends JSONObject>(source: T, target: T): JsonPatchOperation[] {
   const operations: JsonPatchOperation[] = []
 
   // Helper to add operations
@@ -335,9 +335,9 @@ export function getJsonDiff(source: JSONObject, target: JSONObject): JsonPatchOp
  *
  * @category JSON
  */
-export function applyJsonPatch(json: JSONObject, operations: JsonPatchOperation[]): JSONObject {
+export function applyJsonPatch<T extends JSONObject>(json: T, operations: JsonPatchOperation[]): T {
   // Create a deep copy to avoid mutations
-  const result = JSON.parse(JSON.stringify(json)) as JSONObject
+  const result = JSON.parse(JSON.stringify(json)) as T
 
   for (const operation of operations) {
     switch (operation.op) {
@@ -413,7 +413,7 @@ export function applyJsonPatch(json: JSONObject, operations: JsonPatchOperation[
 
       case 'test': {
         const value = getJsonValueAtPointer(result, operation.path)
-        if (!deepEquals(value, operation.value)) {
+        if (!deepEquals(value!, operation.value!)) {
           throw new Error(`Test operation failed at path: ${operation.path}`)
         }
         break

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   createJsonSchema,
-  deleteUndefinedKeys,
-  generatePointersFromJsonSchema,
+  getAllJsonPointersFromSchema,
+  removeUndefinedValues,
 } from './schema'
 
 // createJsonSchema tests
@@ -92,14 +92,14 @@ describe(createJsonSchema.name, () => {
   })
 })
 
-// deleteUndefinedKeys tests
+// removeUndefinedValues tests
 
-describe(deleteUndefinedKeys.name, () => {
+describe(removeUndefinedValues.name, () => {
   it('should return primitives as-is', ({ expect }) => {
-    expect(deleteUndefinedKeys(null)).toBeNull()
-    expect(deleteUndefinedKeys('string')).toBe('string')
-    expect(deleteUndefinedKeys(123)).toBe(123)
-    expect(deleteUndefinedKeys(true)).toBe(true)
+    expect(removeUndefinedValues(null)).toBeNull()
+    expect(removeUndefinedValues('string')).toBe('string')
+    expect(removeUndefinedValues(123)).toBe(123)
+    expect(removeUndefinedValues(true)).toBe(true)
   })
 
   it('should remove undefined keys from simple objects', ({ expect }) => {
@@ -115,7 +115,7 @@ describe(deleteUndefinedKeys.name, () => {
       c: 'test',
     }
 
-    const result = deleteUndefinedKeys(input)
+    const result = removeUndefinedValues(input)
     expect(result).toEqual(expected)
     expect(result).toBe(input)
   })
@@ -144,12 +144,12 @@ describe(deleteUndefinedKeys.name, () => {
       },
     }
 
-    expect(deleteUndefinedKeys(input)).toEqual(expected)
+    expect(removeUndefinedValues(input)).toEqual(expected)
   })
 
   it('should handle arrays', ({ expect }) => {
     const input = [1, undefined, 'test', undefined, true]
-    const result = deleteUndefinedKeys(input)
+    const result = removeUndefinedValues(input)
     expect(result).toEqual([1, undefined, 'test', undefined, true])
     expect(result).toBe(input)
   })
@@ -157,7 +157,7 @@ describe(deleteUndefinedKeys.name, () => {
   it('should process objects within arrays', ({ expect }) => {
     const input = [{ a: 1, b: undefined }, { c: undefined, d: 'test' }, undefined, { e: { f: undefined, g: 2 } }]
     const expected = [{ a: 1 }, { d: 'test' }, undefined, { e: { g: 2 } }]
-    expect(deleteUndefinedKeys(input)).toEqual(expected)
+    expect(removeUndefinedValues(input)).toEqual(expected)
   })
 
   it('should handle complex nested structures', ({ expect }) => {
@@ -176,18 +176,18 @@ describe(deleteUndefinedKeys.name, () => {
       },
     }
 
-    expect(deleteUndefinedKeys(input)).toEqual(expected)
+    expect(removeUndefinedValues(input)).toEqual(expected)
   })
 
   it('should handle empty objects and arrays', ({ expect }) => {
-    expect(deleteUndefinedKeys({})).toEqual({})
-    expect(deleteUndefinedKeys([])).toEqual([])
+    expect(removeUndefinedValues({})).toEqual({})
+    expect(removeUndefinedValues([])).toEqual([])
   })
 })
 
-// generatePointersFromJsonSchema tests
+// getAllJsonPointersFromSchema tests
 
-describe(generatePointersFromJsonSchema.name, () => {
+describe(getAllJsonPointersFromSchema.name, () => {
   it('simple object schema', () => {
     const schema = {
       type: 'object',
@@ -196,7 +196,7 @@ describe(generatePointersFromJsonSchema.name, () => {
         age: { type: 'number' },
       },
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual(['/name', '/age'])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/name', '/age'])
   })
 
   it('nested object schema', () => {
@@ -212,7 +212,7 @@ describe(generatePointersFromJsonSchema.name, () => {
         },
       },
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual(['/person', '/person/name', '/person/age'])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/person', '/person/name', '/person/age'])
   })
 
   it('array schema with simple items', () => {
@@ -220,7 +220,7 @@ describe(generatePointersFromJsonSchema.name, () => {
       type: 'array',
       items: { type: 'string' },
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual(['/0'])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/0'])
   })
 
   it('array schema with object items', () => {
@@ -234,7 +234,7 @@ describe(generatePointersFromJsonSchema.name, () => {
         },
       },
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual(['/0', '/0/name', '/0/age'])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/0', '/0/name', '/0/age'])
   })
 
   it('complex nested schema', () => {
@@ -266,7 +266,7 @@ describe(generatePointersFromJsonSchema.name, () => {
         },
       },
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual([
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([
       '/id',
       '/user',
       '/user/name',
@@ -283,7 +283,7 @@ describe(generatePointersFromJsonSchema.name, () => {
 
   it('empty schema', () => {
     const schema = {}
-    expect(generatePointersFromJsonSchema(schema)).toEqual([])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([])
   })
 
   it('schema with additional properties', () => {
@@ -294,7 +294,7 @@ describe(generatePointersFromJsonSchema.name, () => {
       },
       additionalProperties: true,
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual(['/name'])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/name'])
   })
 
   it('schema with pattern properties', () => {
@@ -305,7 +305,7 @@ describe(generatePointersFromJsonSchema.name, () => {
         '^I_': { type: 'integer' },
       },
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual([])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([])
   })
 
   it('schema with oneOf', () => {
@@ -324,7 +324,7 @@ describe(generatePointersFromJsonSchema.name, () => {
         },
       ],
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual([])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([])
   })
 
   it('variable schemas in array items', () => {
@@ -347,6 +347,6 @@ describe(generatePointersFromJsonSchema.name, () => {
         },
       ],
     }
-    expect(generatePointersFromJsonSchema(schema)).toEqual(['/0', '/0/name', '/0/age', '/1', '/1/foo', '/1/bar'])
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/0', '/0/name', '/0/age', '/1', '/1/foo', '/1/bar'])
   })
 })

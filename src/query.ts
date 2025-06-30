@@ -91,7 +91,7 @@ export interface QueryMatch {
  *
  * @category JSON
  */
-export function selectJsonValues(json: JSONObject, paths: string[]): (JSONType | undefined)[] {
+export function selectJsonValues<T extends JSONObject>(json: T, paths: string[]): (JSONType | undefined)[] {
   return paths.map(path => getJsonValueAtPointer(json, path))
 }
 
@@ -184,7 +184,7 @@ export function selectJsonValues(json: JSONObject, paths: string[]): (JSONType |
  *
  * @category JSON
  */
-export function queryJsonByPattern(json: JSONObject, pattern: string): QueryMatch[] {
+export function queryJsonByPattern<T extends JSONObject>(json: T, pattern: string): QueryMatch[] {
   const matches: QueryMatch[] = []
 
   // Convert pattern to regex
@@ -341,7 +341,7 @@ export function queryJsonByPattern(json: JSONObject, pattern: string): QueryMatc
  *
  * @category JSON
  */
-export function extractJsonSubset(json: JSONObject, paths: string[]): JSONObject {
+export function extractJsonSubset<T extends JSONObject>(json: T, paths: string[]): JSONObject {
   const result: JSONObject = {}
 
   for (const path of paths) {
