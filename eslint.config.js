@@ -5,5 +5,8 @@ export default itzcull(
   {
     type: 'lib',
     pnpm: true,
+    rules: {
+      'style/indent-binary-ops': 'off',
+    },
   },
 )

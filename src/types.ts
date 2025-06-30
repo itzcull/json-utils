@@ -433,6 +433,484 @@ export type JSONSchema =
   | JSONSchemaGeneric
 
 /**
+ * Utility type to infer TypeScript type from JSON Schema
+ *
+ * Converts a JSON Schema definition into the corresponding TypeScript type,
+ * enabling compile-time type safety when working with schema-validated data.
+ *
+ * @template S - The JSON Schema to convert
+ * @returns The inferred TypeScript type
+ *
+ * @example
+ * ```typescript
+ * const userSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     name: { type: 'string' },
+ *     age: { type: 'number' },
+ *     isActive: { type: 'boolean' }
+ *   },
+ *   required: ['name', 'age']
+ * } as const satisfies JSONSchemaObject
+ *
+ * type User = InferFromSchema<typeof userSchema>
+ * // Result: { name: string; age: number; isActive?: boolean }
+ *
+ * const user: User = { name: 'John', age: 30 } // ✅ Valid
+ * const invalid: User = { name: 'John' } // ❌ Error: missing 'age'
+ * ```
+ */
+export type InferFromSchema<S extends JSONSchema> =
+  S extends JSONSchemaString ? string :
+    S extends JSONSchemaNumber ? number :
+      S extends JSONSchemaInteger ? number :
+        S extends JSONSchemaBoolean ? boolean :
+          S extends JSONSchemaNull ? null :
+            S extends JSONSchemaArray ? InferArrayFromSchema<S> :
+              S extends JSONSchemaObject ? InferObjectFromSchema<S> :
+                S extends JSONSchemaMultiType ? InferMultiTypeFromSchema<S> :
+                  S extends JSONSchemaGeneric ? InferGenericFromSchema<S> :
+                    unknown
+
+/**
+ * Helper type to infer array type from JSON Schema array definition
+ */
+type InferArrayFromSchema<S extends JSONSchemaArray> =
+  S['items'] extends JSONSchema ? InferFromSchema<S['items']>[] :
+    S['items'] extends JSONSchema[] ? InferTupleFromSchema<S['items']> :
+      unknown[]
+
+/**
+ * Helper type to infer tuple type from JSON Schema array with specific items
+ */
+type InferTupleFromSchema<Items extends readonly JSONSchema[]> = {
+  [K in keyof Items]: Items[K] extends JSONSchema ? InferFromSchema<Items[K]> : unknown
+}
+
+/**
+ * Helper type to infer object type from JSON Schema object definition
+ */
+type InferObjectFromSchema<S extends JSONSchemaObject> =
+  S['properties'] extends Record<string, JSONSchema>
+    ? {
+      [K in keyof S['properties'] as K extends string
+        ? S['required'] extends readonly string[]
+          ? K extends S['required'][number]
+            ? K
+            : never
+          : never
+        : never
+      ]: InferFromSchema<S['properties'][K]>
+    } & {
+      [K in keyof S['properties'] as K extends string
+        ? S['required'] extends readonly string[]
+          ? K extends S['required'][number]
+            ? never
+            : K
+          : K
+        : never
+      ]?: InferFromSchema<S['properties'][K]>
+    }
+    : Record<string, unknown>
+
+/**
+ * Helper type to infer union type from JSON Schema multi-type definition
+ */
+type InferMultiTypeFromSchema<S extends JSONSchemaMultiType> =
+  S['type'] extends readonly JSONTypeName[]
+    ? {
+        [K in keyof S['type']]: S['type'][K] extends JSONTypeName
+          ? JSONTypeNameToType<S['type'][K]>
+          : never
+      }[number]
+    : unknown
+
+/**
+ * Helper type to map JSON type names to TypeScript types
+ */
+type JSONTypeNameToType<T extends JSONTypeName> =
+  T extends 'string' ? string :
+    T extends 'number' ? number :
+      T extends 'integer' ? number :
+        T extends 'boolean' ? boolean :
+          T extends 'null' ? null :
+            T extends 'object' ? Record<string, unknown> :
+              T extends 'array' ? unknown[] :
+                unknown
+
+/**
+ * Helper type to infer type from generic JSON Schema (no type specified)
+ */
+type InferGenericFromSchema<S extends JSONSchemaGeneric> =
+  S['type'] extends JSONTypeName ? JSONTypeNameToType<S['type']> :
+    S['type'] extends readonly JSONTypeName[] ? InferMultiTypeFromSchema<S & JSONSchemaMultiType> :
+      S['properties'] extends Record<string, JSONSchema> ? InferObjectFromSchema<S & JSONSchemaObject> :
+        S['items'] extends JSONSchema | JSONSchema[] ? InferArrayFromSchema<S & JSONSchemaArray> :
+          unknown
+
+/**
+ * Utility type to infer schema type from TypeScript data type
+ *
+ * Converts a TypeScript type into the corresponding JSON Schema structure,
+ * enabling compile-time schema generation from existing type definitions.
+ *
+ * @template T - The TypeScript type to convert
+ * @returns The inferred JSON Schema type
+ *
+ * @example
+ * ```typescript
+ * interface User {
+ *   name: string
+ *   age: number
+ *   isActive?: boolean
+ *   tags: string[]
+ * }
+ *
+ * type UserSchema = InferSchemaFromData<User>
+ * // Result: JSONSchemaObject with appropriate properties and required fields
+ * ```
+ */
+export type InferSchemaFromData<T> =
+  T extends string ? JSONSchemaString :
+    T extends number ? JSONSchemaNumber :
+      T extends boolean ? JSONSchemaBoolean :
+        T extends null ? JSONSchemaNull :
+          T extends readonly (infer U)[] ? JSONSchemaArray & { items: InferSchemaFromData<U> } :
+            T extends Record<string, any>
+              ? T extends null
+                ? JSONSchemaNull
+                : JSONSchemaObject & {
+                  properties: {
+                    [K in keyof T]: InferSchemaFromData<T[K]>
+                  }
+                  required: RequiredKeys<T>[]
+                }
+              : JSONSchemaGeneric
+
+/**
+ * Utility type to extract required keys from a type
+ */
+export type RequiredKeys<T> = {
+  [K in keyof T]-?: Record<string, any> extends Pick<T, K> ? never : K
+}[keyof T]
+
+/**
+ * Utility type to extract optional keys from a type
+ */
+export type OptionalKeys<T> = {
+  [K in keyof T]-?: Record<string, any> extends Pick<T, K> ? K : never
+}[keyof T]
+
+/**
+ * Utility type to make properties deeply readonly
+ */
+export type DeepReadonly<T> = {
+  readonly [P in keyof T]: T[P] extends (infer U)[]
+    ? readonly DeepReadonly<U>[]
+    : T[P] extends Record<string, any>
+      ? DeepReadonly<T[P]>
+      : T[P]
+}
+
+/**
+ * Utility type to make specific schema properties optional
+ *
+ * Modifies a JSON Schema to make certain properties optional instead of required.
+ * Useful for creating variations of schemas or handling partial data scenarios.
+ *
+ * @template S - The base JSON Schema
+ * @template K - The property keys to make optional
+ *
+ * @example
+ * ```typescript
+ * const userSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     name: { type: 'string' },
+ *     age: { type: 'number' },
+ *     email: { type: 'string' }
+ *   },
+ *   required: ['name', 'age', 'email']
+ * } as const satisfies JSONSchemaObject
+ *
+ * type PartialUserSchema = MakeSchemaOptional<typeof userSchema, 'email'>
+ * // Result: schema with email as optional, name and age still required
+ *
+ * type UserUpdate = InferFromSchema<PartialUserSchema>
+ * // Result: { name: string; age: number; email?: string }
+ * ```
+ */
+export type MakeSchemaOptional<S extends JSONSchemaObject, K extends string> =
+  S extends { required: readonly string[] }
+    ? Omit<S, 'required'> & {
+      required: Exclude<S['required'][number], K>[] extends never[]
+        ? never
+        : Exclude<S['required'][number], K>[]
+    }
+    : S
+
+/**
+ * Utility type to merge two JSON schemas
+ *
+ * Combines properties from two object schemas, with the second schema's
+ * properties taking precedence. Required fields are merged appropriately.
+ *
+ * @template S1 - The first schema
+ * @template S2 - The second schema (takes precedence)
+ *
+ * @example
+ * ```typescript
+ * const baseSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     id: { type: 'string' },
+ *     name: { type: 'string' }
+ *   },
+ *   required: ['id']
+ * } as const satisfies JSONSchemaObject
+ *
+ * const extendedSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     name: { type: 'string' },  // Override
+ *     email: { type: 'string' }, // New field
+ *     age: { type: 'number' }    // New field
+ *   },
+ *   required: ['name', 'email']
+ * } as const satisfies JSONSchemaObject
+ *
+ * type MergedSchema = MergeSchemas<typeof baseSchema, typeof extendedSchema>
+ * // Result: Combined schema with all properties and merged required fields
+ *
+ * type MergedType = InferFromSchema<MergedSchema>
+ * // Result: { id?: string; name: string; email: string; age?: number }
+ * ```
+ */
+export type MergeSchemas<S1 extends JSONSchemaObject, S2 extends JSONSchemaObject> =
+  JSONSchemaObject & {
+    type: 'object'
+    properties: (S1['properties'] extends Record<string, any> ? S1['properties'] : Record<string, any>) &
+      (S2['properties'] extends Record<string, any> ? S2['properties'] : Record<string, any>)
+    required: [
+      ...(S1['required'] extends readonly string[] ? S1['required'] : []),
+      ...(S2['required'] extends readonly string[] ? S2['required'] : []),
+    ]
+  }
+
+/**
+ * Utility type to create a partial schema (all properties optional)
+ *
+ * Converts a schema so that all properties become optional, useful for
+ * creating update schemas or partial validation scenarios.
+ *
+ * @template S - The base JSON Schema
+ *
+ * @example
+ * ```typescript
+ * const userSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     name: { type: 'string' },
+ *     age: { type: 'number' },
+ *     email: { type: 'string' }
+ *   },
+ *   required: ['name', 'age', 'email']
+ * } as const satisfies JSONSchemaObject
+ *
+ * type PartialSchema = PartialSchema<typeof userSchema>
+ * // Result: schema with no required fields
+ *
+ * type UserUpdate = InferFromSchema<PartialSchema>
+ * // Result: { name?: string; age?: number; email?: string }
+ * ```
+ */
+export type PartialSchema<S extends JSONSchemaObject> =
+  Omit<S, 'required'> & {
+    required?: never
+  }
+
+/**
+ * Utility type to pick specific properties from a schema
+ *
+ * Creates a new schema containing only the specified properties from
+ * the original schema, similar to TypeScript's Pick utility.
+ *
+ * @template S - The base JSON Schema
+ * @template K - The property keys to pick
+ *
+ * @example
+ * ```typescript
+ * const userSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     id: { type: 'string' },
+ *     name: { type: 'string' },
+ *     age: { type: 'number' },
+ *     email: { type: 'string' },
+ *     internal: { type: 'boolean' }
+ *   },
+ *   required: ['id', 'name', 'age']
+ * } as const satisfies JSONSchemaObject
+ *
+ * type PublicUserSchema = PickSchemaProperties<typeof userSchema, 'id' | 'name' | 'email'>
+ * // Result: schema with only id, name, email properties
+ *
+ * type PublicUser = InferFromSchema<PublicUserSchema>
+ * // Result: { id: string; name: string; email?: string }
+ * ```
+ */
+export type PickSchemaProperties<S extends JSONSchemaObject, K extends keyof S['properties']> =
+  S extends { properties: Record<string, any> }
+    ? JSONSchemaObject & {
+      type: 'object'
+      properties: Pick<S['properties'], K>
+      required: S['required'] extends readonly string[]
+        ? Extract<S['required'][number], K>[] extends never[]
+          ? never
+          : Extract<S['required'][number], K>[]
+        : never
+    }
+    : never
+
+/**
+ * Utility type to omit specific properties from a schema
+ *
+ * Creates a new schema excluding the specified properties from
+ * the original schema, similar to TypeScript's Omit utility.
+ *
+ * @template S - The base JSON Schema
+ * @template K - The property keys to omit
+ *
+ * @example
+ * ```typescript
+ * const userSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     id: { type: 'string' },
+ *     name: { type: 'string' },
+ *     age: { type: 'number' },
+ *     internal: { type: 'boolean' },
+ *     secret: { type: 'string' }
+ *   },
+ *   required: ['id', 'name', 'internal']
+ * } as const satisfies JSONSchemaObject
+ *
+ * type PublicUserSchema = OmitSchemaProperties<typeof userSchema, 'internal' | 'secret'>
+ * // Result: schema without internal and secret properties
+ *
+ * type PublicUser = InferFromSchema<PublicUserSchema>
+ * // Result: { id: string; name: string; age?: number }
+ * ```
+ */
+export type OmitSchemaProperties<S extends JSONSchemaObject, K extends keyof S['properties']> =
+  S extends { properties: Record<string, any> }
+    ? JSONSchemaObject & {
+      type: 'object'
+      properties: Omit<S['properties'], K>
+      required: S['required'] extends readonly string[]
+        ? Exclude<S['required'][number], K>[] extends never[]
+          ? never
+          : Exclude<S['required'][number], K>[]
+        : never
+    }
+    : never
+
+/**
+ * Utility type to check if a type extends another type
+ *
+ * Helper type for conditional schema operations and type compatibility checking.
+ *
+ * @template T - The type to check
+ * @template U - The type to check against
+ */
+export type Extends<T, U> = T extends U ? true : false
+
+/**
+ * Utility type to get schema property names
+ *
+ * Extracts the property names from a JSON Schema object as a union type.
+ *
+ * @template S - The JSON Schema
+ *
+ * @example
+ * ```typescript
+ * const userSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     name: { type: 'string' },
+ *     age: { type: 'number' },
+ *     email: { type: 'string' }
+ *   }
+ * } as const satisfies JSONSchemaObject
+ *
+ * type PropertyNames = SchemaPropertyNames<typeof userSchema>
+ * // Result: 'name' | 'age' | 'email'
+ * ```
+ */
+export type SchemaPropertyNames<S extends JSONSchemaObject> =
+  S['properties'] extends Record<string, any>
+    ? keyof S['properties']
+    : never
+
+/**
+ * Utility type to get required schema property names
+ *
+ * Extracts only the required property names from a JSON Schema object.
+ *
+ * @template S - The JSON Schema
+ *
+ * @example
+ * ```typescript
+ * const userSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     name: { type: 'string' },
+ *     age: { type: 'number' },
+ *     email: { type: 'string' }
+ *   },
+ *   required: ['name', 'age']
+ * } as const satisfies JSONSchemaObject
+ *
+ * type RequiredProps = SchemaRequiredPropertyNames<typeof userSchema>
+ * // Result: 'name' | 'age'
+ * ```
+ */
+export type SchemaRequiredPropertyNames<S extends JSONSchemaObject> =
+  S['required'] extends readonly string[]
+    ? S['required'][number]
+    : never
+
+/**
+ * Utility type to get optional schema property names
+ *
+ * Extracts only the optional property names from a JSON Schema object.
+ *
+ * @template S - The JSON Schema
+ *
+ * @example
+ * ```typescript
+ * const userSchema = {
+ *   type: 'object',
+ *   properties: {
+ *     name: { type: 'string' },
+ *     age: { type: 'number' },
+ *     email: { type: 'string' }
+ *   },
+ *   required: ['name', 'age']
+ * } as const satisfies JSONSchemaObject
+ *
+ * type OptionalProps = SchemaOptionalPropertyNames<typeof userSchema>
+ * // Result: 'email'
+ * ```
+ */
+export type SchemaOptionalPropertyNames<S extends JSONSchemaObject> =
+  S['properties'] extends Record<string, any>
+    ? S['required'] extends readonly string[]
+      ? Exclude<keyof S['properties'], S['required'][number]>
+      : keyof S['properties']
+    : never
+
+/**
  * @deprecated Use the discriminated union JSONSchema type instead
  * This interface is kept for backward compatibility but will be removed in a future version
  */

@@ -1,4 +1,5 @@
 export * from './compare'
+export * from './conversion'
 export * from './mutator'
 export * from './pointer'
 export * from './predicate'
