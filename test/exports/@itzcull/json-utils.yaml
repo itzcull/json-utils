@@ -1,7 +1,10 @@
 .:
+  analyzeOptionalFields: function
   applyJsonPatch: function
   coerceToJsonType: function
   createJsonSchema: function
+  createPreciseJsonSchema: function
+  createSchemaAccessor: function
   decodePointer: function
   deepEquals: function
   deepMergeJson: function
@@ -19,15 +22,21 @@
   isJsonPointer: function
   isJsonTypeName: function
   isJsonValue: function
+  jsonPointerToSchemaPointer: function
   mapJsonValues: function
+  mergeJsonSchemas: function
   queryJsonByPattern: function
   removeJsonValueAtPointer: function
   removeUndefinedValues: function
   sanitizeJson: function
+  schemaPointerToJsonPointer: function
+  schemasCompatible: function
   selectJsonValues: function
   setJsonValueAtPointer: function
   toJsonPointer: function
   toJsonSchemaPointer: function
+  transformSchemaData: function
   unflattenJson: function
   VALID_JSON_TYPE_NAMES: object
+  validateDataAgainstSchemaType: function
   validateJsonPointerPath: function
