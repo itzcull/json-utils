@@ -1,6 +1,6 @@
 import type {
   InferFromSchema,
-  JsonPointers,
+  JSONPointers,
   JSONSchemaArray,
   JSONSchemaObject,
   MakeSchemaOptional,
@@ -32,7 +32,7 @@ const userSchema = {
     },
   },
   required: ['name', 'age'],
-} as const satisfies JSONSchemaObject
+} satisfies JSONSchemaObject
 
 const profileSchema = {
   type: 'object',
@@ -51,7 +51,7 @@ const profileSchema = {
       required: ['name'],
     },
   },
-} as const satisfies JSONSchemaObject
+} satisfies JSONSchemaObject
 
 const arraySchema = {
   type: 'array',
@@ -63,7 +63,7 @@ const arraySchema = {
     },
     required: ['id'],
   },
-} as const satisfies JSONSchemaArray
+} satisfies JSONSchemaArray
 
 describe('validateDataAgainstSchemaType', () => {
   it('should validate object data against schema', ({ expect }) => {
@@ -217,7 +217,7 @@ describe('schemasCompatible', () => {
         age: { type: 'number' },
       },
       required: ['name', 'age'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const extendedSchema = {
       type: 'object',
@@ -227,7 +227,7 @@ describe('schemasCompatible', () => {
         email: { type: 'string' },
       },
       required: ['name', 'age'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     expect(schemasCompatible(baseSchema, extendedSchema)).toBe(true)
     expect(schemasCompatible(extendedSchema, baseSchema)).toBe(true)
@@ -240,7 +240,7 @@ describe('schemasCompatible', () => {
         name: { type: 'string' },
       },
       required: ['name'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const schema2 = {
       type: 'object',
@@ -249,7 +249,7 @@ describe('schemasCompatible', () => {
         age: { type: 'number' },
       },
       required: ['name', 'age'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     expect(schemasCompatible(schema1, schema2)).toBe(false) // schema1 data missing age field required by schema2
     expect(schemasCompatible(schema2, schema1)).toBe(true) // schema2 data works with schema1 (age is ignored)
@@ -267,12 +267,12 @@ describe('schemasCompatible', () => {
     const stringArraySchema = {
       type: 'array',
       items: { type: 'string' },
-    } as const satisfies JSONSchemaArray
+    } satisfies JSONSchemaArray
 
     const numberArraySchema = {
       type: 'array',
       items: { type: 'number' },
-    } as const satisfies JSONSchemaArray
+    } satisfies JSONSchemaArray
 
     expect(schemasCompatible(stringArraySchema, stringArraySchema)).toBe(true)
     expect(schemasCompatible(stringArraySchema, numberArraySchema)).toBe(false)
@@ -345,7 +345,7 @@ describe('createSchemaAccessor', () => {
           },
         },
       },
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const accessor = createSchemaAccessor(nestedSchema)
     const data = {
@@ -376,7 +376,7 @@ describe('transformSchemaData', () => {
         age: { type: 'number' },
       },
       required: ['fullName', 'age'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const targetSchema = {
       type: 'object',
@@ -386,7 +386,7 @@ describe('transformSchemaData', () => {
         age: { type: 'number' },
       },
       required: ['firstName', 'lastName', 'age'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const sourceData = { fullName: 'John Doe', age: 30 }
 
@@ -418,7 +418,7 @@ describe('transformSchemaData', () => {
         name: { type: 'string' },
       },
       required: ['name'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const targetSchema = {
       type: 'object',
@@ -426,7 +426,7 @@ describe('transformSchemaData', () => {
         title: { type: 'string' },
       },
       required: ['title'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const invalidData = {} // missing required name
 
@@ -447,7 +447,7 @@ describe('transformSchemaData', () => {
         name: { type: 'string' },
       },
       required: ['name'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const targetSchema = {
       type: 'object',
@@ -455,7 +455,7 @@ describe('transformSchemaData', () => {
         title: { type: 'string' },
       },
       required: ['title'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const sourceData = { name: 'John' }
 
@@ -477,7 +477,7 @@ describe('transformSchemaData', () => {
         value: { type: 'string' },
       },
       required: ['value'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const targetSchema = {
       type: 'object',
@@ -485,7 +485,7 @@ describe('transformSchemaData', () => {
         result: { type: 'number' },
       },
       required: ['result'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const sourceData = { value: 'not-a-number' }
 
@@ -567,7 +567,7 @@ describe('schema utility types', () => {
         name: { type: 'string' },
       },
       required: ['id'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const _schema2 = {
       type: 'object',
@@ -576,7 +576,7 @@ describe('schema utility types', () => {
         email: { type: 'string' },
       },
       required: ['email'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     type MergedSchema = MergeSchemas<typeof _schema1, typeof _schema2>
     type MergedType = InferFromSchema<MergedSchema>
@@ -593,7 +593,7 @@ describe('schema utility types', () => {
 describe('jsonPointers integration with schema types', () => {
   it('should generate correct pointer types for schema-inferred data', () => {
     type UserType = InferFromSchema<typeof userSchema>
-    type UserPointers = JsonPointers<UserType>
+    type UserPointers = JSONPointers<UserType>
 
     // Test that specific pointers are included in the union
     expectTypeOf<'/name'>().toExtend<UserPointers>()
@@ -608,7 +608,7 @@ describe('jsonPointers integration with schema types', () => {
 
   it('should work with nested schema types', () => {
     type ProfileType = InferFromSchema<typeof profileSchema>
-    type ProfilePointers = JsonPointers<ProfileType>
+    type ProfilePointers = JSONPointers<ProfileType>
 
     expectTypeOf<'/user'>().toExtend<ProfilePointers>()
     expectTypeOf<'/user/name'>().toExtend<ProfilePointers>()

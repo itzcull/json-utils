@@ -3,7 +3,7 @@ import type {
   InferFromSchema,
   InferSchemaFromData,
   JSONObject,
-  JsonPointers,
+  JSONPointers,
   JSONSchemaArray,
   JSONSchemaObject,
   MakeSchemaOptional,
@@ -48,7 +48,7 @@ const userSchema = {
     },
   },
   required: ['id', 'name', 'age'],
-} as const satisfies JSONSchemaObject
+} satisfies JSONSchemaObject
 
 const productSchema = {
   type: 'object',
@@ -60,7 +60,7 @@ const productSchema = {
     inStock: { type: 'boolean' },
   },
   required: ['id', 'title', 'price'],
-} as const satisfies JSONSchemaObject
+} satisfies JSONSchemaObject
 
 const arraySchema = {
   type: 'array',
@@ -72,7 +72,7 @@ const arraySchema = {
     },
     required: ['id'],
   },
-} as const satisfies JSONSchemaArray
+} satisfies JSONSchemaArray
 
 const primitiveSchemas = {
   string: { type: 'string' } as const,
@@ -263,7 +263,7 @@ describe('mergeSchemas type tests', () => {
         name: { type: 'string' },
       },
       required: ['id'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const extendedSchema = {
       type: 'object',
@@ -273,7 +273,7 @@ describe('mergeSchemas type tests', () => {
         age: { type: 'number' }, // New field
       },
       required: ['email'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     // Use schemas at runtime to satisfy linter
     void baseSchema
@@ -298,7 +298,7 @@ describe('mergeSchemas type tests', () => {
         b: { type: 'string' },
       },
       required: ['a'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const schema2 = {
       type: 'object',
@@ -307,7 +307,7 @@ describe('mergeSchemas type tests', () => {
         c: { type: 'string' },
       },
       required: ['b', 'c'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     // Use schemas at runtime to satisfy linter
     void schema1
@@ -524,7 +524,7 @@ describe('deepReadonly type tests', () => {
 describe('jsonPointers integration with schema types', () => {
   it('should generate correct pointer types for schema-inferred data', () => {
     type UserType = InferFromSchema<typeof userSchema>
-    type UserPointers = JsonPointers<UserType>
+    type UserPointers = JSONPointers<UserType>
 
     // Test that specific pointers are included in the union
     expectTypeOf<'/id'>().toExtend<UserPointers>()
@@ -545,7 +545,7 @@ describe('jsonPointers integration with schema types', () => {
 
   it('should work with array schema types', () => {
     type ArrayType = InferFromSchema<typeof arraySchema>
-    type ArrayPointers = JsonPointers<ArrayType>
+    type ArrayPointers = JSONPointers<ArrayType>
 
     expectTypeOf<'/0'>().toExtend<ArrayPointers>()
     expectTypeOf<'/0/id'>().toExtend<ArrayPointers>()
@@ -555,7 +555,7 @@ describe('jsonPointers integration with schema types', () => {
   it('should work with transformed schema types', () => {
     type PartialUserSchema = PartialSchema<typeof userSchema>
     type PartialUserType = InferFromSchema<PartialUserSchema>
-    type PartialUserPointers = JsonPointers<PartialUserType>
+    type PartialUserPointers = JSONPointers<PartialUserType>
 
     // Should still have all the same pointers even though properties are optional
     expectTypeOf<'/id'>().toExtend<PartialUserPointers>()
@@ -631,7 +631,7 @@ describe('edge cases and error handling', () => {
         a: { type: 'string' },
         b: { type: 'number' },
       },
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     // Use schema at runtime to satisfy linter
     void allOptionalSchema
@@ -651,7 +651,7 @@ describe('edge cases and error handling', () => {
         b: { type: 'number' },
       },
       required: ['a', 'b'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     // Use schema at runtime to satisfy linter
     void allRequiredSchema

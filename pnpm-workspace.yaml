@@ -3,6 +3,8 @@ packages:
   - docs
   - packages/*
   - examples/*
+catalog:
+  type-fest: ^4.41.0
 catalogs:
   cli:
     '@antfu/ni': ^25.0.0

@@ -1,6 +1,6 @@
 import type {
   InferFromSchema,
-  JsonPointers,
+  JSONPointers,
   JSONSchema,
   JSONSchemaArray,
   JSONSchemaObject,
@@ -32,7 +32,7 @@ import { isJsonValue } from './predicate'
  *     isActive: { type: 'boolean' }
  *   },
  *   required: ['name', 'age']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * function processUser(rawData: unknown) {
  *   if (validateDataAgainstSchemaType(rawData, userSchema)) {
@@ -110,12 +110,12 @@ function validateValueAgainstSchema(value: unknown, schema: JSONSchema): boolean
       if (!Array.isArray(value))
         return false
 
-      const arraySchema = schema as JSONSchemaArray
+      const arraySchema = schema
       if (arraySchema.items) {
         if (Array.isArray(arraySchema.items)) {
           // Tuple validation
           return value.every((item, index) => {
-            const itemSchema = arraySchema.items![index]
+            const itemSchema = arraySchema.items[index]
             return itemSchema ? validateValueAgainstSchema(item, itemSchema as JSONSchema) : true
           })
         }
@@ -326,7 +326,7 @@ export function schemaPointerToJsonPointer<P extends string>(schemaPointer: P): 
  *     age: { type: 'number' }
  *   },
  *   required: ['name', 'age']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * const v2Schema = {
  *   type: 'object',
@@ -336,7 +336,7 @@ export function schemaPointerToJsonPointer<P extends string>(schemaPointer: P): 
  *     email: { type: 'string' }  // New optional field
  *   },
  *   required: ['name', 'age']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * const v3Schema = {
  *   type: 'object',
@@ -346,7 +346,7 @@ export function schemaPointerToJsonPointer<P extends string>(schemaPointer: P): 
  *     email: { type: 'string' }
  *   },
  *   required: ['name', 'age', 'email']  // Email now required
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * // API migration checking
  * console.log(schemasCompatible(v1Schema, v2Schema))  // true - v1 data works with v2
@@ -479,7 +479,7 @@ export function schemasCompatible<S1 extends JSONSchema, S2 extends JSONSchema>(
  *       items: { type: 'string' }
  *     }
  *   }
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * const userAccessor = createSchemaAccessor(userSchema)
  *
@@ -520,7 +520,7 @@ export function schemasCompatible<S1 extends JSONSchema, S2 extends JSONSchema>(
  */
 export function createSchemaAccessor<S extends JSONSchema>(schema: S) {
   type DataType = InferFromSchema<S>
-  type PointerType = JsonPointers<DataType>
+  type PointerType = JSONPointers<DataType>
 
   return function accessor(data: unknown): {
     data: DataType
@@ -564,7 +564,7 @@ export function createSchemaAccessor<S extends JSONSchema>(schema: S) {
  *     fullName: { type: 'string' },
  *     age: { type: 'number' }
  *   }
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * const v2Schema = {
  *   type: 'object',
@@ -574,7 +574,7 @@ export function createSchemaAccessor<S extends JSONSchema>(schema: S) {
  *     age: { type: 'number' },
  *     email: { type: 'string' }
  *   }
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * // API migration
  * const v1Data = { fullName: 'John Doe', age: 30 }

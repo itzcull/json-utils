@@ -1,5 +1,3 @@
-import type { Simplify } from 'type-fest'
-
 export type JSONPrimitive = string | number | boolean | null
 
 export type JSONType = JSONPrimitive | JSONObject | JSONArray
@@ -56,17 +54,17 @@ export type JSONArray = Array<JSONType>
  *
  * @category JSON
  */
-export type JsonPointers<T, Prefix extends string = ''> =
+export type JSONPointers<T, Prefix extends string = ''> =
   // If T is an array, generate array indices and recurse into elements
   T extends readonly (infer U)[]
-    ? Prefix | `${Prefix}/0` | JsonPointers<U, `${Prefix}/0`>
+    ? Prefix | `${Prefix}/0` | JSONPointers<U, `${Prefix}/0`>
     : // If T is an object (but not null), generate property paths
     T extends Record<string, any>
       ? T extends null
         ? Prefix
         : Prefix | {
           [K in keyof T]: K extends string
-            ? `${Prefix}/${K}` | JsonPointers<T[K], `${Prefix}/${K}`>
+            ? `${Prefix}/${K}` | JSONPointers<T[K], `${Prefix}/${K}`>
             : never
         }[keyof T]
       : // T is a primitive value, return only the current prefix
@@ -77,18 +75,18 @@ export type JsonPointers<T, Prefix extends string = ''> =
  * @template T - The JSON object type
  * @template P - The JSON Pointer path
  */
-export type JsonPointerValue<T, P extends string> =
+export type JSONPointerValue<T, P extends string> =
     P extends '' ? T :
-      P extends `/${infer Rest}` ? JsonPointerValueRec<T, Rest> :
+      P extends `/${infer Rest}` ? JSONPointerValueRec<T, Rest> :
         never
 
-type JsonPointerValueRec<T, P extends string> =
+type JSONPointerValueRec<T, P extends string> =
     P extends `${infer K}/${infer Rest}`
       ? K extends keyof T
-        ? JsonPointerValueRec<T[K], Rest>
+        ? JSONPointerValueRec<T[K], Rest>
         : K extends `${number}`
           ? T extends readonly (infer U)[]
-            ? JsonPointerValueRec<U, Rest>
+            ? JSONPointerValueRec<U, Rest>
             : never
           : never
       : P extends keyof T
@@ -333,62 +331,62 @@ export interface JSONSchemaMultiType extends JSONSchemaBase {
   propertyNames?: JSONSchemaDefinition | undefined
 }
 
-/**
- * JSON Schema without type constraint (for use in definitions and partial schemas)
- */
-export interface JSONSchemaGeneric extends JSONSchemaBase {
-  type?: JSONTypeName | JSONTypeName[] | undefined
-  // Include all possible properties since type is optional
-  /**
-   * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.2
-   */
-  multipleOf?: number | undefined
-  maximum?: number | undefined
-  exclusiveMaximum?: number | undefined
-  minimum?: number | undefined
-  exclusiveMinimum?: number | undefined
+// /**
+//  * JSON Schema without type constraint (for use in definitions and partial schemas)
+//  */
+// export interface JSONSchemaGeneric extends JSONSchemaBase {
+//   type?: JSONTypeName | JSONTypeName[] | undefined
+//   // Include all possible properties since type is optional
+//   /**
+//    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.2
+//    */
+//   multipleOf?: number | undefined
+//   maximum?: number | undefined
+//   exclusiveMaximum?: number | undefined
+//   minimum?: number | undefined
+//   exclusiveMinimum?: number | undefined
 
-  /**
-   * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.3
-   */
-  maxLength?: number | undefined
-  minLength?: number | undefined
-  pattern?: string | undefined
+//   /**
+//    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.3
+//    */
+//   maxLength?: number | undefined
+//   minLength?: number | undefined
+//   pattern?: string | undefined
 
-  /**
-   * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.4
-   */
-  items?: JSONSchemaDefinition | JSONSchemaDefinition[] | undefined
-  additionalItems?: JSONSchemaDefinition | undefined
-  maxItems?: number | undefined
-  minItems?: number | undefined
-  uniqueItems?: boolean | undefined
-  contains?: JSONSchemaDefinition | undefined
+//   /**
+//    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.4
+//    */
+//   items?: JSONSchemaDefinition | JSONSchemaDefinition[] | undefined
+//   additionalItems?: JSONSchemaDefinition | undefined
+//   maxItems?: number | undefined
+//   minItems?: number | undefined
+//   uniqueItems?: boolean | undefined
+//   contains?: JSONSchemaDefinition | undefined
 
-  /**
-   * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.5
-   */
-  maxProperties?: number | undefined
-  minProperties?: number | undefined
-  required?: string[] | undefined
-  properties?:
-    | {
-      [key: string]: JSONSchemaDefinition
-    }
-    | undefined
-  patternProperties?:
-    | {
-      [key: string]: JSONSchemaDefinition
-    }
-    | undefined
-  additionalProperties?: JSONSchemaDefinition | undefined
-  dependencies?:
-    | {
-      [key: string]: JSONSchemaDefinition | string[]
-    }
-    | undefined
-  propertyNames?: JSONSchemaDefinition | undefined
-}
+//   /**
+//    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.5
+//    */
+//   maxProperties?: number | undefined
+//   minProperties?: number | undefined
+//   required?: string[] | undefined
+//   properties?:
+//     | {
+//       [key: string]: JSONSchemaDefinition
+//     }
+//     | undefined
+//   patternProperties?:
+//     | {
+//       [key: string]: JSONSchemaDefinition
+//     }
+//     | undefined
+//   additionalProperties?: JSONSchemaDefinition | undefined
+//   dependencies?:
+//     | {
+//       [key: string]: JSONSchemaDefinition | string[]
+//     }
+//     | undefined
+//   propertyNames?: JSONSchemaDefinition | undefined
+// }
 
 /**
  * Discriminated union type for JSON Schema based on the 'type' field
@@ -432,7 +430,7 @@ export type JSONSchema =
   | JSONSchemaArray
   | JSONSchemaObject
   | JSONSchemaMultiType
-  | JSONSchemaGeneric
+  // | JSONSchemaGeneric
 
 /**
  * Utility type to infer TypeScript type from JSON Schema
@@ -453,7 +451,7 @@ export type JSONSchema =
  *     isActive: { type: 'boolean' }
  *   },
  *   required: ['name', 'age']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type User = InferFromSchema<typeof userSchema>
  * // Result: { name: string; age: number; isActive?: boolean }
@@ -462,7 +460,7 @@ export type JSONSchema =
  * const invalid: User = { name: 'John' } // ❌ Error: missing 'age'
  * ```
  */
-export type InferFromSchema<S extends JSONSchema> = Simplify<
+export type InferFromSchema<S extends JSONSchema> =
   S extends JSONSchemaString ? string :
     S extends JSONSchemaNumber ? number :
       S extends JSONSchemaInteger ? number :
@@ -471,9 +469,8 @@ export type InferFromSchema<S extends JSONSchema> = Simplify<
             S extends JSONSchemaArray ? InferArrayFromSchema<S> :
               S extends JSONSchemaObject ? InferObjectFromSchema<S> :
                 S extends JSONSchemaMultiType ? InferMultiTypeFromSchema<S> :
-                  S extends JSONSchemaGeneric ? InferGenericFromSchema<S> :
-                    unknown
->
+                  // S extends JSONSchemaGeneric ? InferGenericFromSchema<S> :
+                  unknown
 
 /**
  * Helper type to infer array type from JSON Schema array definition
@@ -541,15 +538,15 @@ type JSONTypeNameToType<T extends JSONTypeName> =
               T extends 'array' ? unknown[] :
                 unknown
 
-/**
- * Helper type to infer type from generic JSON Schema (no type specified)
- */
-type InferGenericFromSchema<S extends JSONSchemaGeneric> =
-  S['type'] extends JSONTypeName ? JSONTypeNameToType<S['type']> :
-    S['type'] extends readonly JSONTypeName[] ? InferMultiTypeFromSchema<S & JSONSchemaMultiType> :
-      S['properties'] extends Record<string, JSONSchema> ? InferObjectFromSchema<S & JSONSchemaObject> :
-        S['items'] extends JSONSchema | JSONSchema[] ? InferArrayFromSchema<S & JSONSchemaArray> :
-          unknown
+// /**
+//  * Helper type to infer type from generic JSON Schema (no type specified)
+//  */
+// type InferGenericFromSchema<S extends JSONSchemaGeneric> =
+//   S['type'] extends JSONTypeName ? JSONTypeNameToType<S['type']> :
+//     S['type'] extends readonly JSONTypeName[] ? InferMultiTypeFromSchema<S & JSONSchemaMultiType> :
+//       S['properties'] extends Record<string, JSONSchema> ? InferObjectFromSchema<S & JSONSchemaObject> :
+//         S['items'] extends JSONSchema | JSONSchema[] ? InferArrayFromSchema<S & JSONSchemaArray> :
+//           unknown
 
 /**
  * Utility type to infer schema type from TypeScript data type
@@ -588,7 +585,7 @@ export type InferSchemaFromData<T> =
                   }
                   required: RequiredKeys<T>[]
                 }
-              : JSONSchemaGeneric
+              : never
 
 /**
  * Utility type to extract required keys from a type
@@ -634,7 +631,7 @@ export type DeepReadonly<T> = {
  *     email: { type: 'string' }
  *   },
  *   required: ['name', 'age', 'email']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type PartialUserSchema = MakeSchemaOptional<typeof userSchema, 'email'>
  * // Result: schema with email as optional, name and age still required
@@ -670,7 +667,7 @@ export type MakeSchemaOptional<S extends JSONSchemaObject, K extends string> =
  *     name: { type: 'string' }
  *   },
  *   required: ['id']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * const extendedSchema = {
  *   type: 'object',
@@ -680,7 +677,7 @@ export type MakeSchemaOptional<S extends JSONSchemaObject, K extends string> =
  *     age: { type: 'number' }    // New field
  *   },
  *   required: ['name', 'email']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type MergedSchema = MergeSchemas<typeof baseSchema, typeof extendedSchema>
  * // Result: Combined schema with all properties and merged required fields
@@ -718,7 +715,7 @@ export type MergeSchemas<S1 extends JSONSchemaObject, S2 extends JSONSchemaObjec
  *     email: { type: 'string' }
  *   },
  *   required: ['name', 'age', 'email']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type PartialSchema = PartialSchema<typeof userSchema>
  * // Result: schema with no required fields
@@ -753,7 +750,7 @@ export type PartialSchema<S extends JSONSchemaObject> =
  *     internal: { type: 'boolean' }
  *   },
  *   required: ['id', 'name', 'age']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type PublicUserSchema = PickSchemaProperties<typeof userSchema, 'id' | 'name' | 'email'>
  * // Result: schema with only id, name, email properties
@@ -796,7 +793,7 @@ export type PickSchemaProperties<S extends JSONSchemaObject, K extends keyof S['
  *     secret: { type: 'string' }
  *   },
  *   required: ['id', 'name', 'internal']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type PublicUserSchema = OmitSchemaProperties<typeof userSchema, 'internal' | 'secret'>
  * // Result: schema without internal and secret properties
@@ -806,7 +803,7 @@ export type PickSchemaProperties<S extends JSONSchemaObject, K extends keyof S['
  * ```
  */
 export type OmitSchemaProperties<S extends JSONSchemaObject, K extends keyof S['properties']> =
-  Simplify<S extends { properties: Record<string, any> }
+  S extends { properties: Record<string, any> }
     ? JSONSchemaObject & {
       type: 'object'
       properties: Omit<S['properties'], K>
@@ -816,7 +813,7 @@ export type OmitSchemaProperties<S extends JSONSchemaObject, K extends keyof S['
           : Exclude<S['required'][number], K>[]
         : never
     }
-    : never>
+    : never
 
 /**
  * Utility type to check if a type extends another type
@@ -844,7 +841,7 @@ export type Extends<T, U> = T extends U ? true : false
  *     age: { type: 'number' },
  *     email: { type: 'string' }
  *   }
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type PropertyNames = SchemaPropertyNames<typeof userSchema>
  * // Result: 'name' | 'age' | 'email'
@@ -872,7 +869,7 @@ export type SchemaPropertyNames<S extends JSONSchemaObject> =
  *     email: { type: 'string' }
  *   },
  *   required: ['name', 'age']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type RequiredProps = SchemaRequiredPropertyNames<typeof userSchema>
  * // Result: 'name' | 'age'
@@ -900,7 +897,7 @@ export type SchemaRequiredPropertyNames<S extends JSONSchemaObject> =
  *     email: { type: 'string' }
  *   },
  *   required: ['name', 'age']
- * } as const satisfies JSONSchemaObject
+ * } satisfies JSONSchemaObject
  *
  * type OptionalProps = SchemaOptionalPropertyNames<typeof userSchema>
  * // Result: 'email'

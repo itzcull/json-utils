@@ -1,6 +1,6 @@
 import type {
   InferFromSchema,
-  JsonPointers,
+  JSONPointers,
   JSONSchemaObject,
   MakeSchemaOptional,
   MergeSchemas,
@@ -75,7 +75,7 @@ const userApiSchema = {
     },
   },
   required: ['id', 'username', 'email'],
-} as const satisfies JSONSchemaObject
+} satisfies JSONSchemaObject
 
 const blogPostSchema = {
   type: 'object',
@@ -119,12 +119,12 @@ const blogPostSchema = {
     isPublished: { type: 'boolean' },
   },
   required: ['id', 'title', 'content', 'author'],
-} as const satisfies JSONSchemaObject
+} satisfies JSONSchemaObject
 
 describe('real-world API integration tests', () => {
   it('should handle complex user profile data with type safety', () => {
     type User = InferFromSchema<typeof userApiSchema>
-    type UserPointers = JsonPointers<User>
+    type UserPointers = JSONPointers<User>
 
     // Test that we get proper type inference for nested structures
     expectTypeOf<User['id']>().toEqualTypeOf<string>()
@@ -257,7 +257,7 @@ describe('schema transformation workflows', () => {
         isActive: { type: 'boolean' },
       },
       required: ['id', 'fullName', 'emailAddress'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     // V2 API schema - split fullName, renamed email field
     const userV2Schema = {
@@ -277,7 +277,7 @@ describe('schema transformation workflows', () => {
         },
       },
       required: ['id', 'firstName', 'lastName', 'email'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     type UserV1 = InferFromSchema<typeof userV1Schema>
     type UserV2 = InferFromSchema<typeof userV2Schema>
@@ -455,7 +455,7 @@ describe('dynamic schema building patterns', () => {
         name: { type: 'string' },
       },
       required: ['id', 'name'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     // Use schema at runtime to satisfy linter
     void baseSchema
@@ -498,7 +498,7 @@ describe('dynamic schema building patterns', () => {
         adminLevel: { type: 'number' },
       },
       required: ['permissions', 'adminLevel'],
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     const regularUserExtension = {
       type: 'object',
@@ -519,7 +519,7 @@ describe('dynamic schema building patterns', () => {
           },
         },
       },
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     // Use schemas at runtime to satisfy linter
     void adminUserExtension
@@ -576,10 +576,10 @@ describe('performance and edge cases', () => {
           },
         },
       },
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     type DeepType = InferFromSchema<typeof deepSchema>
-    type DeepPointers = JsonPointers<DeepType>
+    type DeepPointers = JSONPointers<DeepType>
 
     // Should be able to access deeply nested properties
     expectTypeOf<'/level1/level2/level3/level4/level5/value'>().toExtend<DeepPointers>()
@@ -643,10 +643,10 @@ describe('performance and edge cases', () => {
           },
         },
       },
-    } as const satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject
 
     type ComplexArrayType = InferFromSchema<typeof complexArraySchema>
-    type ComplexPointers = JsonPointers<ComplexArrayType>
+    type ComplexPointers = JSONPointers<ComplexArrayType>
 
     expectTypeOf<'/users/0/posts/0/comments/0/text'>().toExtend<ComplexPointers>()
 

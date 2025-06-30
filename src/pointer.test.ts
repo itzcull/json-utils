@@ -1,4 +1,4 @@
-import type { JsonPointers, JSONPrimitive } from './types'
+import type { JSONPointers, JSONPrimitive } from './types'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import {
   decodePointer,
@@ -485,7 +485,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         readonly active: boolean
       }
 
-      type SimplePointers = JsonPointers<SimpleObject>
+      type SimplePointers = JSONPointers<SimpleObject>
 
       // Debug: Check what the type actually resolves to
       type _DebugType = SimplePointers
@@ -524,7 +524,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         }
       }
 
-      type NestedPointers = JsonPointers<NestedObject>
+      type NestedPointers = JSONPointers<NestedObject>
 
       // Test valid nested pointer literals
       expectTypeOf<''>().toExtend<NestedPointers>()
@@ -569,7 +569,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         }
       }
 
-      type ArrayPointers = JsonPointers<ObjectWithArrays>
+      type ArrayPointers = JSONPointers<ObjectWithArrays>
 
       // Test root and object pointers
       expectTypeOf<''>().toExtend<ArrayPointers>()
@@ -603,10 +603,10 @@ describe('jsonPointers utility type with expectTypeOf', () => {
     })
 
     it('should work with primitive types', () => {
-      type StringPointers = JsonPointers<string>
-      type NumberPointers = JsonPointers<number>
-      type BooleanPointers = JsonPointers<boolean>
-      type NullPointers = JsonPointers<null>
+      type StringPointers = JSONPointers<string>
+      type NumberPointers = JSONPointers<number>
+      type BooleanPointers = JSONPointers<boolean>
+      type NullPointers = JSONPointers<null>
 
       // Primitives should only have root pointer
       expectTypeOf<StringPointers>().toEqualTypeOf<''>()
@@ -639,7 +639,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         }
       }
 
-      type OptionalPointers = JsonPointers<OptionalObject>
+      type OptionalPointers = JSONPointers<OptionalObject>
 
       // All properties should be reachable regardless of optionality
       expectTypeOf<''>().toExtend<OptionalPointers>()
@@ -665,7 +665,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         readonly config: { readonly type: 'A', readonly a: string } | { readonly type: 'B', readonly b: number }
       }
 
-      type UnionPointers = JsonPointers<UnionObject>
+      type UnionPointers = JSONPointers<UnionObject>
 
       // Basic paths should work
       expectTypeOf('').toMatchObjectType<UnionPointers>()
@@ -702,7 +702,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         readonly features: readonly string[]
       }
 
-      type ComplexPointers = JsonPointers<ComplexStructure>
+      type ComplexPointers = JSONPointers<ComplexStructure>
 
       // Test deep nesting paths
       expectTypeOf('').toMatchObjectType<ComplexPointers>()
@@ -754,7 +754,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         tags: ['admin', 'user'],
       }
 
-      type TestPointers = JsonPointers<TestData>
+      type TestPointers = JSONPointers<TestData>
 
       // Test that function parameter types work correctly
       expectTypeOf(getJsonValueAtPointer<TestData>).parameter(1).toMatchObjectType<TestPointers>()
@@ -781,7 +781,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
       }
 
       const user: User = { name: 'Alice', age: 25 }
-      type UserPointers = JsonPointers<User>
+      type UserPointers = JSONPointers<User>
 
       // Valid pointer should be accepted by function
       const validPointer: UserPointers = '/name'
@@ -798,7 +798,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
   describe('edge cases and boundary conditions', () => {
     it('should handle empty object types', () => {
       interface EmptyObject {}
-      type EmptyPointers = JsonPointers<EmptyObject>
+      type EmptyPointers = JSONPointers<EmptyObject>
 
       // Empty object should only have root pointer
       expectTypeOf<EmptyPointers>().toEqualTypeOf<''>()
@@ -812,7 +812,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         readonly fixed: boolean
       }
 
-      type IndexPointers = JsonPointers<IndexObject>
+      type IndexPointers = JSONPointers<IndexObject>
 
       // Should include fixed properties and generic index access
       expectTypeOf('').toMatchObjectType<IndexPointers>()
@@ -824,7 +824,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
 
     it('should work with readonly array types', () => {
       type ReadonlyArrayType = readonly string[]
-      type ArrayPointers = JsonPointers<ReadonlyArrayType>
+      type ArrayPointers = JSONPointers<ReadonlyArrayType>
 
       // Array should have root and index pointers
       expectTypeOf('').toMatchObjectType<ArrayPointers>()
@@ -842,7 +842,7 @@ describe('jsonPointers utility type with expectTypeOf', () => {
         }
       }
 
-      type DeepPointers = JsonPointers<DeepOptional>
+      type DeepPointers = JSONPointers<DeepOptional>
 
       expectTypeOf('').toMatchObjectType<DeepPointers>()
       expectTypeOf('/a').toMatchObjectType<DeepPointers>()
