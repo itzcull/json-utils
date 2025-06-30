@@ -1,3 +1,4 @@
+import type { JSONObject } from './types'
 import { describe, it } from 'vitest'
 import { removeJsonValueAtPointer, setJsonValueAtPointer } from './mutator'
 
@@ -53,89 +54,89 @@ describe(setJsonValueAtPointer.name, () => {
   })
 
   it('should handle array indices', ({ expect }) => {
-    const obj: any = { arr: [] }
+    const obj = { arr: [] } satisfies JSONObject
     setJsonValueAtPointer(obj, '/arr/0', 'first')
     expect(obj).toEqual({ arr: ['first'] })
   })
 
   it('should handle multiple array indices', ({ expect }) => {
-    const obj: any = { arr: [[]] }
+    const obj = { arr: [[]] } satisfies JSONObject
     setJsonValueAtPointer(obj, '/arr/0/0', 'nested')
     expect(obj).toEqual({ arr: [['nested']] })
   })
 
   it('should work with keys containing special characters', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     setJsonValueAtPointer(obj, '/a~1b', 'slash')
     expect(obj).toEqual({ 'a/b': 'slash' })
   })
 
   it('should handle empty string keys', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     setJsonValueAtPointer(obj, '/', 'root')
     expect(obj).toEqual({ '': 'root' })
   })
 
   it('should work with numeric keys', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     setJsonValueAtPointer(obj, '/123', 'numeric key')
     expect(obj).toEqual({ 123: 'numeric key' })
   })
 
   it('should handle very deep nesting', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     setJsonValueAtPointer(obj, '/a/b/c/d/e/f/g/h/i/j', 'deep')
     expect(obj.a.b.c.d.e.f.g.h.i.j).toBe('deep')
   })
 
   it('should set a value in an existing nested structure', ({ expect }) => {
-    const obj = { a: { b: { c: 1 } } }
+    const obj = { a: { b: { c: 1 } } } satisfies JSONObject
     setJsonValueAtPointer(obj, '/a/b/d', 2)
     expect(obj).toEqual({ a: { b: { c: 1, d: 2 } } })
   })
 
   it('should throw error when setting undefined', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     expect(() => setJsonValueAtPointer(obj, '/a', undefined)).toThrow()
   })
 
   it('should throw error when setting Date', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     expect(() => setJsonValueAtPointer(obj, '/a', new Date())).toThrow()
   })
 
   it('should handle setting null', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     setJsonValueAtPointer(obj, '/a', null)
     expect(obj).toEqual({ a: null })
   })
 
   it('should handle setting complex objects', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     const complexValue = { x: 1, y: [2, 3], z: { w: 4 } }
     setJsonValueAtPointer(obj, '/complex', complexValue)
     expect(obj).toEqual({ complex: complexValue })
   })
 
   it('should handle references with no leading #', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     setJsonValueAtPointer(obj, '/a', 1)
     expect(obj).toEqual({ a: 1 })
   })
 
   it('should create array if using numbered property', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     setJsonValueAtPointer(obj, '/test/0', 1)
     expect(obj).toEqual({ test: [1] })
   })
 
   it('should throw an error for invalid JSON pointers', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     expect(() => setJsonValueAtPointer(obj, 'invalid', 1)).toThrow()
   })
 
   it('should do nothing when trying to set a value on a non-object', ({ expect }) => {
-    const obj: any = { a: 1 }
+    const obj = { a: 1 } satisfies JSONObject
     setJsonValueAtPointer(obj, '/a/b', 2)
     expect(obj).toEqual({ a: 1 })
     setJsonValueAtPointer(obj, '/a/b/c', 'value')
@@ -145,7 +146,7 @@ describe(setJsonValueAtPointer.name, () => {
   })
 
   it('should throw if a cyclic reference is detected', ({ expect }) => {
-    const obj: any = {}
+    const obj: JSONObject = {}
     obj.self = obj
     expect(() => setJsonValueAtPointer(obj, '/self/a', 1)).toThrow()
   })
@@ -154,48 +155,48 @@ describe(setJsonValueAtPointer.name, () => {
 // removeJsonValueAtPointer tests
 describe(removeJsonValueAtPointer.name, () => {
   it('should remove a value from a simple object', ({ expect }) => {
-    const obj = { a: 1, b: 2, c: 3 }
+    const obj = { a: 1, b: 2, c: 3 } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/b')
     expect(obj).toEqual({ a: 1, c: 3 })
   })
 
   it('should remove a value from a nested object', ({ expect }) => {
-    const obj = { a: { b: { c: 1, d: 2 } } }
+    const obj = { a: { b: { c: 1, d: 2 } } } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/a/b/c')
     expect(obj).toEqual({ a: { b: { d: 2 } } })
   })
 
   it('should remove an element from an array', ({ expect }) => {
-    const obj = { arr: [1, 2, 3, 4] }
+    const obj = { arr: [1, 2, 3, 4] } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/arr/1')
     expect(obj).toEqual({ arr: [1, 3, 4] })
   })
 
   it('should handle empty objects', ({ expect }) => {
-    const obj = {}
+    const obj = {} satisfies JSONObject
     removeJsonValueAtPointer(obj, '/nonexistent')
     expect(obj).toEqual({})
   })
 
   it('should handle empty arrays', ({ expect }) => {
-    const obj = { arr: [] }
+    const obj = { arr: [] } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/arr/0')
     expect(obj).toEqual({ arr: [] })
   })
 
   it('should handle root pointer', ({ expect }) => {
-    const obj = { a: 1 }
+    const obj = { a: 1 } satisfies JSONObject
     expect(() => removeJsonValueAtPointer(obj, '')).toThrow()
   })
 
   it('should handle non-existent paths', ({ expect }) => {
-    const obj = { a: 1 }
+    const obj = { a: 1 } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/b/c')
     expect(obj).toEqual({ a: 1 })
   })
 
   it('should handle escaped characters in pointer', ({ expect }) => {
-    const obj = { 'a/b': { 'c~d': 1 } }
+    const obj = { 'a/b': { 'c~d': 1 } } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/a~1b/c~0d')
     expect(obj).toEqual({ 'a/b': {} })
   })
@@ -216,7 +217,7 @@ describe(removeJsonValueAtPointer.name, () => {
       a: {
         b: [{ c: 1 }, { d: [1, 2, { e: 3 }] }],
       },
-    }
+    } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/a/b/1/d/2/e')
     expect(obj).toEqual({
       a: {
@@ -226,19 +227,19 @@ describe(removeJsonValueAtPointer.name, () => {
   })
 
   it('should handle removal of last element in array', ({ expect }) => {
-    const obj = { arr: [1, 2, 3] }
+    const obj = { arr: [1, 2, 3] } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/arr/2')
     expect(obj).toEqual({ arr: [1, 2] })
   })
 
   it('should handle removal of first element in array', ({ expect }) => {
-    const obj = { arr: [1, 2, 3] }
+    const obj = { arr: [1, 2, 3] } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/arr/0')
     expect(obj).toEqual({ arr: [2, 3] })
   })
 
   it('should not modify object when removing non-existent array index', ({ expect }) => {
-    const obj = { arr: [1, 2, 3] }
+    const obj = { arr: [1, 2, 3] } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/arr/5')
     expect(obj).toEqual({ arr: [1, 2, 3] })
   })
@@ -249,19 +250,19 @@ describe(removeJsonValueAtPointer.name, () => {
         [1, 2],
         [3, 4],
       ],
-    }
+    } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/arr/1/0')
     expect(obj).toEqual({ arr: [[1, 2], [4]] })
   })
 
   it('should handle removal of entire nested structure', ({ expect }) => {
-    const obj = { a: { b: { c: 1 } }, d: 2 }
+    const obj = { a: { b: { c: 1 } }, d: 2 } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/a')
     expect(obj).toEqual({ d: 2 })
   })
 
   it('should handle nested null values', ({ expect }) => {
-    const obj = { a: { b: null } }
+    const obj = { a: { b: null } } satisfies JSONObject
     removeJsonValueAtPointer(obj, '/a/b')
     expect(obj).toEqual({ a: {} })
   })

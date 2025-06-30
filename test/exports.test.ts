@@ -4,9 +4,9 @@ import { getPackageExportsManifest } from 'vitest-package-exports'
 import yaml from 'yaml'
 
 describe('exports-snapshot', async () => {
-  const packages: { name: string, path: string, private?: boolean }[] = JSON.parse(
+  const packages = JSON.parse(
     await x('pnpm', ['ls', '--only-projects', '-r', '--json']).then(r => r.stdout),
-  )
+  ) satisfies { name: string, path: string, private?: boolean }[]
 
   for (const pkg of packages) {
     if (pkg.private)

@@ -1,3 +1,4 @@
+import type { JSONSchemaArray, JSONSchemaObject } from './types'
 import { describe, expect, it } from 'vitest'
 import {
   createJsonSchema,
@@ -195,7 +196,7 @@ describe(getAllJsonPointersFromSchema.name, () => {
         name: { type: 'string' },
         age: { type: 'number' },
       },
-    }
+    } satisfies JSONSchemaObject
     expect(getAllJsonPointersFromSchema(schema)).toEqual(['/name', '/age'])
   })
 
@@ -219,7 +220,7 @@ describe(getAllJsonPointersFromSchema.name, () => {
     const schema = {
       type: 'array',
       items: { type: 'string' },
-    }
+    } satisfies JSONSchemaArray
     expect(getAllJsonPointersFromSchema(schema)).toEqual(['/0'])
   })
 
@@ -265,7 +266,7 @@ describe(getAllJsonPointersFromSchema.name, () => {
           items: { type: 'string' },
         },
       },
-    }
+    } satisfies JSONSchemaObject
     expect(getAllJsonPointersFromSchema(schema)).toEqual([
       '/id',
       '/user',
@@ -282,7 +283,7 @@ describe(getAllJsonPointersFromSchema.name, () => {
   })
 
   it('empty schema', () => {
-    const schema = {}
+    const schema = {} satisfies JSONSchemaObject
     expect(getAllJsonPointersFromSchema(schema)).toEqual([])
   })
 
@@ -293,7 +294,7 @@ describe(getAllJsonPointersFromSchema.name, () => {
         name: { type: 'string' },
       },
       additionalProperties: true,
-    }
+    } satisfies JSONSchemaObject
     expect(getAllJsonPointersFromSchema(schema)).toEqual(['/name'])
   })
 
@@ -304,7 +305,7 @@ describe(getAllJsonPointersFromSchema.name, () => {
         '^S_': { type: 'string' },
         '^I_': { type: 'integer' },
       },
-    }
+    } satisfies JSONSchemaObject
     expect(getAllJsonPointersFromSchema(schema)).toEqual([])
   })
 
@@ -346,7 +347,7 @@ describe(getAllJsonPointersFromSchema.name, () => {
           },
         },
       ],
-    }
+    } satisfies JSONSchemaArray
     expect(getAllJsonPointersFromSchema(schema)).toEqual(['/0', '/0/name', '/0/age', '/1', '/1/foo', '/1/bar'])
   })
 })
