@@ -377,6 +377,7 @@ export const VALID_JSON_TYPE_NAMES = new Set<string>([
  *
  * @category JSON
  */
+// TODO: Consider renaming to isJsonTypeName for clarity
 export function isJsonValueType(val: unknown): val is JSONTypeName {
   if (typeof val !== 'string')
     return false

@@ -224,6 +224,7 @@ export function createJsonSchema(value: JSONType): JSONSchema {
  *
  * @category JSON
  */
+// TODO: Consider renaming to removeUndefinedValues for consistency with removeJsonValueAtPointer
 export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
   if (data === null || typeof data !== 'object') {
     return data
@@ -370,6 +371,7 @@ export function deleteUndefinedKeys<T extends JSONType>(data: T): T {
  *
  * @category JSON
  */
+// TODO: Consider renaming to getAllJsonPointersFromSchema for consistency with getAllJsonPointers
 export function generatePointersFromJsonSchema(schema: JSONSchema, prefix: string = ''): string[] {
   const pointers: string[] = []
 
