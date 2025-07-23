@@ -30,6 +30,9 @@ catalogs:
     typescript:
       specifier: ^5.8.2
       version: 5.8.3
+    unbuild:
+      specifier: ^3.5.0
+      version: 3.6.0
     vite:
       specifier: ^6.2.1
       version: 6.3.5
@@ -49,8 +52,8 @@ catalogs:
       version: 22.16.5
   utils:
     tinyexec:
-      specifier: ^0.3.2
-      version: 0.3.2
+      specifier: ^1.0.0
+      version: 1.0.1
 
 importers:
 
@@ -79,7 +82,7 @@ importers:
         version: 2.13.0
       tinyexec:
         specifier: catalog:utils
-        version: 0.3.2
+        version: 1.0.1
       tsx:
         specifier: catalog:cli
         version: 4.19.4
