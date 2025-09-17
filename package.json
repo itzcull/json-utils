@@ -2,7 +2,7 @@
   "name": "@itzcull/json-utils",
   "type": "module",
   "version": "0.0.3",
-  "packageManager": "pnpm@10.16.1",
+  "packageManager": "pnpm@10.17.0",
   "description": "TypeScript utilities for working with JSON data",
   "author": "Will Cullen <will@itzcull.com>",
   "repository": {
