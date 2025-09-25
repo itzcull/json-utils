@@ -5,7 +5,7 @@ packages:
   - examples/*
 catalogs:
   cli:
-    '@antfu/ni': ^25.0.0
+    '@antfu/ni': ^26.0.0
     '@itzcull/eslint-config': ^0.0.3
     bumpp: ^10.1.0
     eslint: ^9.22.0
