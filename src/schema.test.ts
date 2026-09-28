@@ -1,353 +1,365 @@
-import type { JSONSchemaArray, JSONSchemaObject } from './types'
-import { describe, expect, it } from 'vitest'
-import {
-  createJsonSchema,
-  getAllJsonPointersFromSchema,
-  removeUndefinedValues,
-} from './schema'
+import type { JSONSchemaArray, JSONSchemaObject } from "./types";
+import { describe, expect, it } from "vite-plus/test";
+import { createJsonSchema, getAllJsonPointersFromSchema, removeUndefinedValues } from "./schema";
 
 // createJsonSchema tests
 
 describe(createJsonSchema.name, () => {
-  it('handles primitive types', ({ expect }) => {
-    expect(createJsonSchema('hello')).toEqual({ type: 'string' })
-    expect(createJsonSchema(42)).toEqual({ type: 'number' })
-    expect(createJsonSchema(true)).toEqual({ type: 'boolean' })
-    expect(createJsonSchema(null)).toEqual({ type: 'null' })
-  })
+  it("handles primitive types", ({ expect }) => {
+    expect(createJsonSchema("hello")).toEqual({ type: "string" });
+    expect(createJsonSchema(42)).toEqual({ type: "number" });
+    expect(createJsonSchema(true)).toEqual({ type: "boolean" });
+    expect(createJsonSchema(null)).toEqual({ type: "null" });
+  });
 
-  it('handles arrays', ({ expect }) => {
-    const input = [1, 2, 3]
+  it("handles arrays", ({ expect }) => {
+    const input = [1, 2, 3];
     expect(createJsonSchema(input)).toEqual({
-      type: 'array',
-      items: { type: 'number' },
-    })
+      type: "array",
+      items: { type: "number" },
+    });
 
-    const emptyArray: any[] = []
+    const emptyArray: any[] = [];
     expect(createJsonSchema(emptyArray)).toEqual({
-      type: 'array',
+      type: "array",
       items: {},
-    })
-  })
+    });
+  });
 
-  it('handles nested objects', ({ expect }) => {
+  it("handles nested objects", ({ expect }) => {
     const input = {
-      name: 'John',
+      name: "John",
       age: 30,
       address: {
-        street: '123 Main St',
-        city: 'Boston',
+        street: "123 Main St",
+        city: "Boston",
       },
-    }
+    };
 
     expect(createJsonSchema(input)).toEqual({
-      type: 'object',
+      type: "object",
       properties: {
-        name: { type: 'string' },
-        age: { type: 'number' },
+        name: { type: "string" },
+        age: { type: "number" },
         address: {
-          type: 'object',
+          type: "object",
           properties: {
-            street: { type: 'string' },
-            city: { type: 'string' },
+            street: { type: "string" },
+            city: { type: "string" },
           },
-          required: ['street', 'city'],
+          required: ["street", "city"],
         },
       },
-      required: ['name', 'age', 'address'],
-    })
-  })
+      required: ["name", "age", "address"],
+    });
+  });
 
-  it('handles complex nested structures', ({ expect }) => {
+  it("handles complex nested structures", ({ expect }) => {
     const input = {
       users: [
         {
           id: 1,
           active: true,
-          tags: ['admin', 'user'],
+          tags: ["admin", "user"],
         },
       ],
-    }
+    };
 
     expect(createJsonSchema(input)).toEqual({
-      type: 'object',
+      type: "object",
       properties: {
         users: {
-          type: 'array',
+          type: "array",
           items: {
-            type: 'object',
+            type: "object",
             properties: {
-              id: { type: 'number' },
-              active: { type: 'boolean' },
+              id: { type: "number" },
+              active: { type: "boolean" },
               tags: {
-                type: 'array',
-                items: { type: 'string' },
+                type: "array",
+                items: { type: "string" },
               },
             },
-            required: ['id', 'active', 'tags'],
+            required: ["id", "active", "tags"],
           },
         },
       },
-      required: ['users'],
-    })
-  })
-})
+      required: ["users"],
+    });
+  });
+});
 
 // removeUndefinedValues tests
 
 describe(removeUndefinedValues.name, () => {
-  it('should return primitives as-is', ({ expect }) => {
-    expect(removeUndefinedValues(null)).toBeNull()
-    expect(removeUndefinedValues('string')).toBe('string')
-    expect(removeUndefinedValues(123)).toBe(123)
-    expect(removeUndefinedValues(true)).toBe(true)
-  })
+  it("should return primitives as-is", ({ expect }) => {
+    expect(removeUndefinedValues(null)).toBeNull();
+    expect(removeUndefinedValues("string")).toBe("string");
+    expect(removeUndefinedValues(123)).toBe(123);
+    expect(removeUndefinedValues(true)).toBe(true);
+  });
 
-  it('should remove undefined keys from simple objects', ({ expect }) => {
+  it("should remove undefined keys from simple objects", ({ expect }) => {
     const input = {
       a: 1,
       b: undefined,
-      c: 'test',
+      c: "test",
       d: undefined,
-    }
+    };
 
     const expected = {
       a: 1,
-      c: 'test',
-    }
+      c: "test",
+    };
 
-    const result = removeUndefinedValues(input)
-    expect(result).toEqual(expected)
-    expect(result).toBe(input)
-  })
+    const result = removeUndefinedValues(input);
+    expect(result).toEqual(expected);
+    expect(result).toBe(input);
+  });
 
-  it('should handle nested objects', ({ expect }) => {
+  it("should handle nested objects", ({ expect }) => {
     const input = {
       a: 1,
       b: {
         x: undefined,
-        y: 'test',
+        y: "test",
         z: {
           deep: undefined,
           valid: true,
         },
       },
       c: undefined,
-    }
+    };
 
     const expected = {
       a: 1,
       b: {
-        y: 'test',
+        y: "test",
         z: {
           valid: true,
         },
       },
-    }
+    };
 
-    expect(removeUndefinedValues(input)).toEqual(expected)
-  })
+    expect(removeUndefinedValues(input)).toEqual(expected);
+  });
 
-  it('should handle arrays', ({ expect }) => {
-    const input = [1, undefined, 'test', undefined, true]
-    const result = removeUndefinedValues(input)
-    expect(result).toEqual([1, undefined, 'test', undefined, true])
-    expect(result).toBe(input)
-  })
+  it("should handle arrays", ({ expect }) => {
+    const input = [1, undefined, "test", undefined, true];
+    const result = removeUndefinedValues(input);
+    expect(result).toEqual([1, undefined, "test", undefined, true]);
+    expect(result).toBe(input);
+  });
 
-  it('should process objects within arrays', ({ expect }) => {
-    const input = [{ a: 1, b: undefined }, { c: undefined, d: 'test' }, undefined, { e: { f: undefined, g: 2 } }]
-    const expected = [{ a: 1 }, { d: 'test' }, undefined, { e: { g: 2 } }]
-    expect(removeUndefinedValues(input)).toEqual(expected)
-  })
+  it("should process objects within arrays", ({ expect }) => {
+    const input = [
+      { a: 1, b: undefined },
+      { c: undefined, d: "test" },
+      undefined,
+      { e: { f: undefined, g: 2 } },
+    ];
+    const expected = [{ a: 1 }, { d: "test" }, undefined, { e: { g: 2 } }];
+    expect(removeUndefinedValues(input)).toEqual(expected);
+  });
 
-  it('should handle complex nested structures', ({ expect }) => {
+  it("should handle complex nested structures", ({ expect }) => {
     const input = {
       a: [{ x: 1, y: undefined }, { z: undefined }],
       b: {
         c: [undefined, { d: undefined, e: 3 }],
         f: undefined,
       },
-    }
+    };
 
     const expected = {
       a: [{ x: 1 }, {}],
       b: {
         c: [undefined, { e: 3 }],
       },
-    }
+    };
 
-    expect(removeUndefinedValues(input)).toEqual(expected)
-  })
+    expect(removeUndefinedValues(input)).toEqual(expected);
+  });
 
-  it('should handle empty objects and arrays', ({ expect }) => {
-    expect(removeUndefinedValues({})).toEqual({})
-    expect(removeUndefinedValues([])).toEqual([])
-  })
-})
+  it("should handle empty objects and arrays", ({ expect }) => {
+    expect(removeUndefinedValues({})).toEqual({});
+    expect(removeUndefinedValues([])).toEqual([]);
+  });
+});
 
 // getAllJsonPointersFromSchema tests
 
 describe(getAllJsonPointersFromSchema.name, () => {
-  it('simple object schema', () => {
+  it("simple object schema", () => {
     const schema = {
-      type: 'object',
+      type: "object",
       properties: {
-        name: { type: 'string' },
-        age: { type: 'number' },
+        name: { type: "string" },
+        age: { type: "number" },
       },
-    } satisfies JSONSchemaObject
-    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/name', '/age'])
-  })
+    } satisfies JSONSchemaObject;
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(["/name", "/age"]);
+  });
 
-  it('nested object schema', () => {
+  it("nested object schema", () => {
     const schema = {
-      type: 'object',
+      type: "object",
       properties: {
         person: {
-          type: 'object',
+          type: "object",
           properties: {
-            name: { type: 'string' },
-            age: { type: 'number' },
+            name: { type: "string" },
+            age: { type: "number" },
           },
         },
       },
-    }
-    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/person', '/person/name', '/person/age'])
-  })
+    };
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([
+      "/person",
+      "/person/name",
+      "/person/age",
+    ]);
+  });
 
-  it('array schema with simple items', () => {
+  it("array schema with simple items", () => {
     const schema = {
-      type: 'array',
-      items: { type: 'string' },
-    } satisfies JSONSchemaArray
-    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/0'])
-  })
+      type: "array",
+      items: { type: "string" },
+    } satisfies JSONSchemaArray;
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(["/0"]);
+  });
 
-  it('array schema with object items', () => {
+  it("array schema with object items", () => {
     const schema = {
-      type: 'array',
+      type: "array",
       items: {
-        type: 'object',
+        type: "object",
         properties: {
-          name: { type: 'string' },
-          age: { type: 'number' },
+          name: { type: "string" },
+          age: { type: "number" },
         },
       },
-    }
-    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/0', '/0/name', '/0/age'])
-  })
+    };
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(["/0", "/0/name", "/0/age"]);
+  });
 
-  it('complex nested schema', () => {
+  it("complex nested schema", () => {
     const schema = {
-      type: 'object',
+      type: "object",
       properties: {
-        id: { type: 'string' },
+        id: { type: "string" },
         user: {
-          type: 'object',
+          type: "object",
           properties: {
-            name: { type: 'string' },
-            email: { type: 'string' },
+            name: { type: "string" },
+            email: { type: "string" },
             addresses: {
-              type: 'array',
+              type: "array",
               items: {
-                type: 'object',
+                type: "object",
                 properties: {
-                  street: { type: 'string' },
-                  city: { type: 'string' },
-                  country: { type: 'string' },
+                  street: { type: "string" },
+                  city: { type: "string" },
+                  country: { type: "string" },
                 },
               },
             },
           },
         },
         tags: {
-          type: 'array',
-          items: { type: 'string' },
+          type: "array",
+          items: { type: "string" },
         },
       },
-    } satisfies JSONSchemaObject
+    } satisfies JSONSchemaObject;
     expect(getAllJsonPointersFromSchema(schema)).toEqual([
-      '/id',
-      '/user',
-      '/user/name',
-      '/user/email',
-      '/user/addresses',
-      '/user/addresses/0',
-      '/user/addresses/0/street',
-      '/user/addresses/0/city',
-      '/user/addresses/0/country',
-      '/tags',
-      '/tags/0',
-    ])
-  })
+      "/id",
+      "/user",
+      "/user/name",
+      "/user/email",
+      "/user/addresses",
+      "/user/addresses/0",
+      "/user/addresses/0/street",
+      "/user/addresses/0/city",
+      "/user/addresses/0/country",
+      "/tags",
+      "/tags/0",
+    ]);
+  });
 
-  it('empty schema', () => {
-    const schema = {} satisfies JSONSchemaObject
-    expect(getAllJsonPointersFromSchema(schema)).toEqual([])
-  })
+  it("empty schema", () => {
+    const schema = {} satisfies JSONSchemaObject;
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([]);
+  });
 
-  it('schema with additional properties', () => {
+  it("schema with additional properties", () => {
     const schema = {
-      type: 'object',
+      type: "object",
       properties: {
-        name: { type: 'string' },
+        name: { type: "string" },
       },
       additionalProperties: true,
-    } satisfies JSONSchemaObject
-    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/name'])
-  })
+    } satisfies JSONSchemaObject;
+    expect(getAllJsonPointersFromSchema(schema)).toEqual(["/name"]);
+  });
 
-  it('schema with pattern properties', () => {
+  it("schema with pattern properties", () => {
     const schema = {
-      type: 'object',
+      type: "object",
       patternProperties: {
-        '^S_': { type: 'string' },
-        '^I_': { type: 'integer' },
+        "^S_": { type: "string" },
+        "^I_": { type: "integer" },
       },
-    } satisfies JSONSchemaObject
-    expect(getAllJsonPointersFromSchema(schema)).toEqual([])
-  })
+    } satisfies JSONSchemaObject;
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([]);
+  });
 
-  it('schema with oneOf', () => {
+  it("schema with oneOf", () => {
     const schema = {
-      type: 'object',
+      type: "object",
       oneOf: [
         {
           properties: {
-            name: { type: 'string' },
+            name: { type: "string" },
           },
         },
         {
           properties: {
-            id: { type: 'number' },
+            id: { type: "number" },
           },
         },
       ],
-    }
-    expect(getAllJsonPointersFromSchema(schema)).toEqual([])
-  })
+    };
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([]);
+  });
 
-  it('variable schemas in array items', () => {
+  it("variable schemas in array items", () => {
     const schema = {
-      type: 'array',
+      type: "array",
       items: [
         {
-          type: 'object',
+          type: "object",
           properties: {
-            name: { type: 'string' },
-            age: { type: 'number' },
+            name: { type: "string" },
+            age: { type: "number" },
           },
         },
         {
-          type: 'object',
+          type: "object",
           properties: {
-            foo: { type: 'string' },
-            bar: { type: 'number' },
+            foo: { type: "string" },
+            bar: { type: "number" },
           },
         },
       ],
-    } satisfies JSONSchemaArray
-    expect(getAllJsonPointersFromSchema(schema)).toEqual(['/0', '/0/name', '/0/age', '/1', '/1/foo', '/1/bar'])
-  })
-})
+    } satisfies JSONSchemaArray;
+    expect(getAllJsonPointersFromSchema(schema)).toEqual([
+      "/0",
+      "/0/name",
+      "/0/age",
+      "/1",
+      "/1/foo",
+      "/1/bar",
+    ]);
+  });
+});

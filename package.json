@@ -1,49 +1,46 @@
 {
   "name": "@itzcull/json-utils",
-  "type": "module",
   "version": "0.0.3",
-  "packageManager": "pnpm@10.16.1",
   "description": "TypeScript utilities for working with JSON data",
-  "author": "Will Cullen <will@itzcull.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/itzcull/json-utils.git"
-  },
-  "bugs": "https://github.com/itzcull/json-utils/issues",
   "keywords": [
     "json",
     "typescript",
     "utils"
   ],
+  "bugs": "https://github.com/itzcull/json-utils/issues",
+  "author": "Will Cullen <will@itzcull.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itzcull/json-utils.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
   "sideEffects": false,
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "unbuild",
     "dev": "unbuild --stub",
-    "lint": "eslint",
+    "lint": "vp lint",
     "prepublishOnly": "nr build",
     "bump": "bumpp",
     "release": "pnpm bump && pnpm publish",
     "start": "tsx src/index.ts",
-    "test": "vitest",
+    "test": "vp test",
     "typecheck": "tsc --noEmit",
     "prepare": "simple-git-hooks"
   },
   "devDependencies": {
     "@antfu/ni": "catalog:cli",
-    "@itzcull/eslint-config": "catalog:cli",
     "@types/node": "catalog:types",
     "bumpp": "catalog:cli",
-    "eslint": "catalog:cli",
     "lint-staged": "catalog:cli",
     "simple-git-hooks": "catalog:cli",
     "tinyexec": "catalog:utils",
@@ -51,6 +48,7 @@
     "typescript": "catalog:cli",
     "unbuild": "catalog:cli",
     "vite": "catalog:cli",
+    "vite-plus": "catalog:cli",
     "vitest": "catalog:testing",
     "vitest-package-exports": "catalog:testing",
     "yaml": "catalog:testing"
@@ -59,6 +57,7 @@
     "pre-commit": "pnpm i --frozen-lockfile --ignore-scripts --offline && npx lint-staged"
   },
   "lint-staged": {
-    "*": "eslint --fix"
-  }
+    "*": "vp lint --fix"
+  },
+  "packageManager": "pnpm@10.16.1"
 }
