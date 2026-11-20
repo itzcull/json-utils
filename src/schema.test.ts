@@ -1,5 +1,5 @@
 import type { JSONSchemaArray, JSONSchemaObject } from './types'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vite-plus/test'
 import {
   createJsonSchema,
   getAllJsonPointersFromSchema,

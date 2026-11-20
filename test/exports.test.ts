@@ -1,5 +1,5 @@
 import { x } from 'tinyexec'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vite-plus/test'
 import { getPackageExportsManifest } from 'vitest-package-exports'
 import yaml from 'yaml'
 
