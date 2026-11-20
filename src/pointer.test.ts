@@ -1,5 +1,5 @@
 import type { JsonPointers, JSONPrimitive } from './types'
-import { describe, expect, expectTypeOf, it } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vite-plus/test'
 import {
   decodePointer,
   encodePointer,

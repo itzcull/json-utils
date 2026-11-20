@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest'
+import { describe, it } from 'vite-plus/test'
 import { deepMergeJson, filterJsonByPaths, flattenJson, mapJsonValues, unflattenJson } from './transform'
 
 describe(deepMergeJson.name, () => {

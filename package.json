@@ -34,7 +34,7 @@
     "bump": "bumpp",
     "release": "pnpm bump && pnpm publish",
     "start": "tsx src/index.ts",
-    "test": "vitest",
+    "test": "vp test",
     "typecheck": "tsc --noEmit",
     "prepare": "simple-git-hooks"
   },
@@ -51,6 +51,7 @@
     "typescript": "catalog:cli",
     "unbuild": "catalog:cli",
     "vite": "catalog:cli",
+    "vite-plus": "catalog:cli",
     "vitest": "catalog:testing",
     "vitest-package-exports": "catalog:testing",
     "yaml": "catalog:testing"

@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest'
+import { describe, it } from 'vite-plus/test'
 import { coerceToJsonType, sanitizeJson, validateJsonPointerPath } from './validator'
 
 describe(validateJsonPointerPath.name, () => {

@@ -1,5 +1,5 @@
 import type { JSONObject } from './types'
-import { describe, it } from 'vitest'
+import { describe, it } from 'vite-plus/test'
 import { removeJsonValueAtPointer, setJsonValueAtPointer } from './mutator'
 
 describe(setJsonValueAtPointer.name, () => {

@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest'
+import { describe, it } from 'vite-plus/test'
 import { extractJsonSubset, queryJsonByPattern, selectJsonValues } from './query'
 
 describe(selectJsonValues.name, () => {
